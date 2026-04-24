@@ -24,34 +24,16 @@
     </style>
 </head>
 <body class="bg-slate-50">
-    <!-- Header -->
+    <!-- Header - Clean & Simple -->
     <div class="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div class="flex items-center gap-x-3">
-                    <div class="w-10 h-10 sm:w-11 sm:h-11 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200 flex-shrink-0">
-                        <i class="fa-solid fa-calendar-check text-white text-2xl sm:text-3xl"></i>
-                    </div>
-                    <div>
-                        <h1 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter text-slate-900">Winchester</h1>
-                        <p class="text-xs text-slate-500 -mt-1">Holiday Tracker</p>
-                    </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+            <div class="flex items-center gap-x-3">
+                <div class="w-10 h-10 sm:w-11 sm:h-11 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200 flex-shrink-0">
+                    <i class="fa-solid fa-calendar-check text-white text-2xl sm:text-3xl"></i>
                 </div>
-
-                <div class="flex items-center gap-x-2">
-                    <button onclick="showUploadModal()" class="flex items-center gap-x-2 px-4 py-2.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-sm font-semibold rounded-3xl transition-all active:scale-[0.985]">
-                        <i class="fa-solid fa-upload"></i>
-                        <span class="hidden md:inline">Upload Data</span>
-                    </button>
-                    
-                    <button onclick="downloadData()" class="flex items-center gap-x-2 px-4 py-2.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-sm font-semibold rounded-3xl transition-all active:scale-[0.985]">
-                        <i class="fa-solid fa-download"></i>
-                        <span class="hidden md:inline">Export</span>
-                    </button>
-
-                    <button onclick="clearAllData()" class="flex items-center gap-x-2 px-4 py-2.5 bg-white hover:bg-red-50 border border-slate-300 hover:border-red-200 text-slate-700 hover:text-red-600 text-sm font-semibold rounded-3xl transition-all active:scale-[0.985]">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
+                <div>
+                    <h1 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter text-slate-900">Winchester</h1>
+                    <p class="text-xs text-slate-500 -mt-1">Holiday Tracker</p>
                 </div>
             </div>
         </div>
@@ -99,9 +81,9 @@
             </div>
         </div>
 
-        <!-- Calendar Header - CENTERED -->
-        <div class="flex flex-col items-center mb-4">
-            <div class="flex items-center gap-x-4 mb-3">
+        <!-- Calendar Header - CENTERED (No Today button) -->
+        <div class="flex justify-center mb-4">
+            <div class="flex items-center gap-x-4">
                 <button onclick="prevMonth()" class="w-11 h-11 flex items-center justify-center text-slate-600 hover:bg-slate-100 active:bg-slate-200 rounded-2xl transition-all text-xl">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
@@ -115,12 +97,6 @@
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
-            
-            <!-- Extended Today Button -->
-            <button onclick="goToToday()" class="px-8 py-2.5 text-sm font-semibold bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-3xl flex items-center justify-center gap-x-2 transition-all shadow-sm">
-                <i class="fa-solid fa-calendar-day"></i>
-                <span>Today</span>
-            </button>
         </div>
 
         <!-- CALENDAR VIEW -->
@@ -165,41 +141,6 @@
             <div class="px-5 sm:px-6 py-3.5 border-t bg-slate-50 rounded-b-3xl text-xs text-slate-500 flex justify-between">
                 <div>Winchester Store</div>
                 <div id="modal-count"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Upload Modal -->
-    <div id="upload-modal" onclick="if (event.target.id === 'upload-modal') hideUploadModal()" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div onclick="event.stopImmediatePropagation()" class="modal bg-white w-full sm:rounded-3xl sm:shadow-2xl sm:max-w-md rounded-t-3xl">
-            <div class="p-5 sm:p-6">
-                <div class="flex justify-between items-start mb-5">
-                    <div>
-                        <h3 class="font-display text-xl font-semibold">Upload Holiday Data</h3>
-                        <p class="text-sm text-slate-500 mt-1">Paste or upload the tab-separated text</p>
-                    </div>
-                    <button onclick="hideUploadModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-times text-xl"></i></button>
-                </div>
-                
-                <div id="drop-zone" class="border-2 border-dashed border-slate-300 hover:border-indigo-400 rounded-3xl p-8 sm:p-10 text-center transition-all cursor-pointer mb-4 active:bg-indigo-50"
-                     ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" onclick="document.getElementById('file-input').click()">
-                    <i class="fa-solid fa-cloud-upload-alt text-4xl text-slate-400 mb-3"></i>
-                    <div class="font-semibold text-slate-700">Drop .txt file here</div>
-                    <div class="text-xs text-slate-500 mt-1">or click to browse</div>
-                    <input type="file" id="file-input" accept=".txt,text/plain" class="hidden" onchange="handleFileSelect(event)">
-                </div>
-                
-                <div class="text-center text-xs text-slate-400 mb-4">— or paste below —</div>
-                
-                <textarea id="paste-textarea" rows="5" placeholder="Paste new data here..." class="w-full text-xs font-mono p-4 border border-slate-300 rounded-2xl focus:outline-none focus:border-indigo-400 resize-y"></textarea>
-                
-                <div class="flex gap-x-3 mt-5">
-                    <button onclick="parseAndLoadData()" class="flex-1 py-3.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold rounded-3xl text-sm flex items-center justify-center gap-x-2 transition-all">
-                        <i class="fa-solid fa-sync-alt"></i>
-                        <span>Parse &amp; Load</span>
-                    </button>
-                    <button onclick="hideUploadModal()" class="px-6 py-3.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-3xl transition-all">Cancel</button>
-                </div>
             </div>
         </div>
     </div>
@@ -433,7 +374,6 @@
 
         function prevMonth() { currentMonth--; if (currentMonth < 0) { currentMonth = 11; currentYear--; } renderCalendar(currentMonth, currentYear); }
         function nextMonth() { currentMonth++; if (currentMonth > 11) { currentMonth = 0; currentYear++; } renderCalendar(currentMonth, currentYear); }
-        function goToToday() { const t = new Date(); renderCalendar(t.getMonth(), t.getFullYear()); }
 
         function showDayModal(date, dayLeaves) {
             const modal = document.getElementById('day-modal');
@@ -486,111 +426,11 @@
             document.getElementById('day-modal').style.display = 'none';
         }
 
-        function showUploadModal() {
-            document.getElementById('upload-modal').style.display = 'flex';
-            setTimeout(() => document.getElementById('paste-textarea').focus(), 300);
-        }
-
-        function hideUploadModal() {
-            document.getElementById('upload-modal').style.display = 'none';
-            document.getElementById('paste-textarea').value = '';
-        }
-
-        function handleDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('border-indigo-500','bg-indigo-50'); }
-        function handleDragLeave(e) { e.currentTarget.classList.remove('border-indigo-500','bg-indigo-50'); }
-        function handleDrop(e) { e.preventDefault(); const zone = e.currentTarget; zone.classList.remove('border-indigo-500','bg-indigo-50'); const f = e.dataTransfer.files[0]; if (f) readFileAndParse(f); }
-        function handleFileSelect(e) { const f = e.target.files[0]; if (f) readFileAndParse(f); }
-
-        function readFileAndParse(file) {
-            const reader = new FileReader();
-            reader.onload = ev => { parseTextData(ev.target.result); hideUploadModal(); };
-            reader.readAsText(file);
-        }
-
-        function parseTextData(text) {
-            const lines = text.trim().split(/\r?\n/);
-            const newLeaves = [];
-            
-            for (let line of lines) {
-                line = line.trim();
-                if (!line || line.toLowerCase().includes('created') && line.toLowerCase().includes('type')) continue;
-                
-                const parts = line.split(/\t|\s{2,}/).filter(p => p.trim());
-                if (parts.length >= 7) {
-                    const [created, type, store, employee, start, end, status] = parts;
-                    if (created.match(/\d{2}\/\d{2}\/\d{4}/) && (type === 'Holiday' || type === 'Unpaid Leave') && employee && start.match(/\d{2}\/\d{2}\/\d{4}/) && end.match(/\d{2}\/\d{2}\/\d{4}/)) {
-                        newLeaves.push({
-                            created: created.trim(),
-                            type: type.trim(),
-                            store: store.trim() || 'Winchester',
-                            employee: employee.trim(),
-                            start: start.trim(),
-                            end: end.trim(),
-                            status: (status || 'Requested').trim()
-                        });
-                    }
-                }
-            }
-            
-            if (newLeaves.length > 0) {
-                leaves = newLeaves;
-                updateStats();
-                renderCalendar(currentMonth, currentYear);
-                showToast('Loaded ' + newLeaves.length + ' records successfully!', 'success');
-            } else {
-                showToast('No valid records found.', 'error');
-            }
-        }
-
-        function parseAndLoadData() {
-            const text = document.getElementById('paste-textarea').value.trim();
-            if (!text) { showToast('Please paste data or upload a file.', 'error'); return; }
-            parseTextData(text);
-            hideUploadModal();
-        }
-
-        function showToast(msg, type) {
-            const toast = document.createElement('div');
-            toast.className = 'fixed bottom-5 right-5 px-5 py-3.5 rounded-3xl shadow-xl text-sm font-medium flex items-center gap-x-3 z-[200] ' + (type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white');
-            toast.innerHTML = '<i class="fa-solid ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle') + ' text-lg"></i> <span>' + msg + '</span>';
-            document.body.appendChild(toast);
-            setTimeout(function() {
-                toast.style.transition = 'all .3s';
-                toast.style.opacity = '0';
-                setTimeout(function() { toast.remove(); }, 250);
-            }, 2600);
-        }
-
-        function downloadData() {
-            if (!leaves.length) { showToast('Nothing to export.', 'error'); return; }
-            let txt = "Created\tType\tStore\tEmployee\tStart Date\tEnd Date\tStatus\n";
-            leaves.forEach(l => txt += l.created + '\t' + l.type + '\t' + l.store + '\t' + l.employee + '\t' + l.start + '\t' + l.end + '\t' + l.status + '\n');
-            const blob = new Blob([txt], {type:'text/plain'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = 'winchester-holidays-' + new Date().toISOString().split('T')[0] + '.txt';
-            a.click(); URL.revokeObjectURL(url);
-            showToast('Data exported!');
-        }
-
-        function clearAllData() {
-            if (!confirm('Clear all data?')) return;
-            leaves = [];
-            location.reload();
-        }
-
         function init() {
             updateStats();
             renderCalendar(currentMonth, currentYear);
             
-            document.addEventListener('keydown', function(e) {
-                if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'u') {
-                    e.preventDefault();
-                    showUploadModal();
-                }
-            });
-            
-            console.log('%c[Winchester Holiday Calendar] Calendar-only mode active!', 'color:#64748b');
+            console.log('%c[Winchester Holiday Calendar] Clean version - no buttons, no today!', 'color:#64748b');
         }
 
         window.onload = init;
