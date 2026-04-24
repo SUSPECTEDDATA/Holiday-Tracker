@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Winchester • Holiday Calendar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', system_ui, sans-serif; }
+        .font-display { font-family: 'Space Grotesk', 'Inter', sans-serif; font-weight: 600; }
+        .calendar-day { transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1); min-height: 78px; }
+        @media (min-width: 640px) { .calendar-day { min-height: 92px; } }
+        .calendar-day:hover { background-color: #f8fafc; transform: translateY(-1px); }
+        .calendar-day.today { background-color: #fefce8; border: 2px solid #eab308; }
+        .leave-dot { width: 6px; height: 6px; border-radius: 9999px; }
+        .modal { animation: modalPop 0.2s ease-out forwards; }
+        @keyframes modalPop { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .status-approved { background-color: #dcfce7; color: #166534; }
+        .status-requested { background-color: #fef9c3; color: #854d0e; }
+        .status-denied { background-color: #fee2e2; color: #991b1b; }
+        .type-holiday { background-color: #d1fae5; color: #065f46; }
+        .type-unpaid { background-color: #fef3c7; color: #92400e; }
+        .nav-active { background-color: #6366f1; color: white; box-shadow: 0 4px 6px -1px rgb(99 102 241 / 0.3); }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <!-- Header -->
+    <div class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-x-3">
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200 flex-shrink-0">
+                        <i class="fa-solid fa-calendar-check text-white text-2xl sm:text-3xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter text-slate-900">Winchester</h1>
+                        <p class="text-xs text-slate-500 -mt-1">Holiday Tracker</p>
+                    </div>
+                </div>
+
+                <div class="flex sm:hidden items-center gap-x-2 text-xs">
+                    <div class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full font-semibold" id="approved-count-mobile">0 Approved</div>
+                    <div class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full font-semibold" id="requested-count-mobile">0 Requested</div>
+                </div>
+
+                <div class="hidden sm:flex items-center gap-x-3">
+                    <div class="flex items-center gap-x-2">
+                        <div class="px-3 py-1.5 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full flex items-center gap-x-1.5">
+                            <i class="fa-solid fa-check-double"></i>
+                            <span id="approved-count">0 Approved</span>
+                        </div>
+                        <div class="px-3 py-1.5 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full flex items-center gap-x-1.5">
+                            <i class="fa-solid fa-clock"></i>
+                            <span id="requested-count">0 Requested</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-x-2">
+                        <button onclick="showUploadModal()" class="flex items-center gap-x-2 px-4 py-2.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-sm font-semibold rounded-3xl transition-all active:scale-[0.985]">
+                            <i class="fa-solid fa-upload"></i>
+                            <span class="hidden md:inline">Upload Data</span>
+                        </button>
+                        
+                        <button onclick="downloadData()" class="flex items-center gap-x-2 px-4 py-2.5 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 text-sm font-semibold rounded-3xl transition-all active:scale-[0.985]">
+                            <i class="fa-solid fa-download"></i>
+                            <span class="hidden md:inline">Export</span>
+                        </button>
+
+                        <button onclick="clearAllData()" class="flex items-center gap-x-2 px-4 py-2.5 bg-white hover:bg-red-50 border border-slate-300 hover:border-red-200 text-slate-700 hover:text-red-600 text-sm font-semibold rounded-3xl transition-all active:scale-[0.985]">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-5 pb-10">
+        
+        <div class="hidden sm:grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
+                <div class="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-user-check text-emerald-600 text-2xl"></i>
+                </div>
+                <div>
+                    <div class="text-3xl font-semibold text-slate-900" id="total-employees">0</div>
+                    <div class="text-sm text-slate-500">Team Members</div>
+                </div>
+            </div>
+            <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
+                <div class="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-calendar-day text-indigo-600 text-2xl"></i>
+                </div>
+                <div>
+                    <div class="text-3xl font-semibold text-slate-900" id="total-leaves">0</div>
+                    <div class="text-sm text-slate-500">Total Requests</div>
+                </div>
+            </div>
+            <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
+                <div class="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-clock text-amber-600 text-2xl"></i>
+                </div>
+                <div>
+                    <div class="text-3xl font-semibold text-slate-900" id="upcoming-count">0</div>
+                    <div class="text-sm text-slate-500">Upcoming (30 days)</div>
+                </div>
+            </div>
+            <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
+                <div class="w-12 h-12 bg-violet-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-chart-line text-violet-600 text-2xl"></i>
+                </div>
+                <div>
+                    <div class="text-3xl font-semibold text-slate-900" id="avg-duration">0</div>
+                    <div class="text-sm text-slate-500">Avg. Days / Leave</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="flex flex-col items-center justify-center py-16 text-center">
+            <div class="w-20 h-20 bg-indigo-100 rounded-3xl flex items-center justify-center mb-6">
+                <i class="fa-solid fa-calendar-plus text-indigo-600 text-5xl"></i>
+            </div>
+            <h2 class="text-3xl font-semibold text-slate-900 mb-3">No holiday data yet</h2>
+            <p class="text-slate-500 max-w-md mb-8">Upload your holiday export to see the calendar.</p>
+            
+            <button onclick="showUploadModal()" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-3xl flex items-center gap-x-3 text-lg transition-all active:scale-[0.985] shadow-lg shadow-indigo-200">
+                <i class="fa-solid fa-upload text-xl"></i>
+                <span>Upload Holiday Data</span>
+            </button>
+        </div>
+
+        <div id="main-content" class="hidden">
+            
+            <div class="flex justify-center mb-5">
+                <div class="inline-flex bg-slate-100 rounded-3xl p-1 shadow-inner">
+                    <button onclick="switchView('calendar')" id="btn-calendar" class="px-6 py-2.5 text-sm font-semibold rounded-3xl flex items-center gap-x-2 transition-all nav-active">
+                        <i class="fa-solid fa-calendar"></i>
+                        <span>Calendar</span>
+                    </button>
+                    <button onclick="switchView('list')" id="btn-list" class="px-6 py-2.5 text-sm font-semibold rounded-3xl flex items-center gap-x-2 text-slate-600 hover:text-slate-900 transition-all">
+                        <i class="fa-solid fa-list"></i>
+                        <span>List</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- CALENDAR VIEW -->
+            <div id="calendar-view">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 px-1 gap-3">
+                    <div class="flex items-center gap-x-3">
+                        <button onclick="prevMonth()" class="w-10 h-10 flex items-center justify-center text-slate-600 hover:bg-slate-100 active:bg-slate-200 rounded-2xl transition-all">
+                            <i class="fa-solid fa-chevron-left text-lg"></i>
+                        </button>
+                        
+                        <div class="flex items-baseline gap-x-3">
+                            <h2 id="calendar-month" class="font-display text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight"></h2>
+                            <span id="calendar-year" class="font-mono text-xl sm:text-2xl text-slate-400"></span>
+                        </div>
+                        
+                        <button onclick="nextMonth()" class="w-10 h-10 flex items-center justify-center text-slate-600 hover:bg-slate-100 active:bg-slate-200 rounded-2xl transition-all">
+                            <i class="fa-solid fa-chevron-right text-lg"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-x-2 w-full sm:w-auto">
+                        <button onclick="goToToday()" class="flex-1 sm:flex-none px-4 py-2 text-sm font-semibold bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-3xl flex items-center justify-center gap-x-2 transition-all">
+                            <i class="fa-solid fa-calendar-day"></i>
+                            <span>Today</span>
+                        </button>
+                        
+                        <select id="month-select" onchange="jumpToMonth()" class="flex-1 sm:flex-none bg-white border border-slate-300 text-sm font-medium rounded-3xl px-4 py-2 text-slate-700 focus:outline-none focus:border-indigo-300"></select>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="grid grid-cols-7 bg-slate-100 border-b border-slate-200 text-xs">
+                        <div class="text-center py-2.5 font-bold text-slate-500">SUN</div>
+                        <div class="text-center py-2.5 font-bold text-slate-500">MON</div>
+                        <div class="text-center py-2.5 font-bold text-slate-500">TUE</div>
+                        <div class="text-center py-2.5 font-bold text-slate-500">WED</div>
+                        <div class="text-center py-2.5 font-bold text-slate-500">THU</div>
+                        <div class="text-center py-2.5 font-bold text-slate-500">FRI</div>
+                        <div class="text-center py-2.5 font-bold text-slate-500">SAT</div>
+                    </div>
+                    
+                    <div id="calendar-grid" class="grid grid-cols-7 gap-px bg-slate-200 p-1"></div>
+                </div>
+                
+                <div class="flex flex-wrap justify-center items-center gap-x-5 gap-y-1 mt-4 text-xs text-slate-500">
+                    <div class="flex items-center gap-x-2"><div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div><span>Holiday</span></div>
+                    <div class="flex items-center gap-x-2"><div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div><span>Unpaid Leave</span></div>
+                    <div class="text-slate-400">• Tap any day for details</div>
+                </div>
+            </div>
+
+            <!-- LIST VIEW -->
+            <div id="list-view" class="hidden">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row gap-3">
+                        <div class="flex-1">
+                            <div class="relative">
+                                <i class="fa-solid fa-search absolute left-4 top-3 text-slate-400"></i>
+                                <input type="text" id="search-input" placeholder="Search employee..." class="w-full pl-11 pr-4 py-2.5 text-sm bg-white border border-slate-300 rounded-3xl focus:outline-none focus:border-indigo-300" onkeyup="filterList()">
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-2">
+                            <select id="filter-type" onchange="filterList()" class="bg-white border border-slate-300 text-sm font-medium rounded-3xl px-4 py-2.5 text-slate-700 flex-1 sm:flex-none">
+                                <option value="">All Types</option>
+                                <option value="Holiday">Holiday</option>
+                                <option value="Unpaid Leave">Unpaid Leave</option>
+                            </select>
+                            
+                            <select id="filter-status" onchange="filterList()" class="bg-white border border-slate-300 text-sm font-medium rounded-3xl px-4 py-2.5 text-slate-700 flex-1 sm:flex-none">
+                                <option value="">All Status</option>
+                                <option value="Approved">Approved</option>
+                                <option value="Requested">Requested</option>
+                                <option value="Denied">Denied</option>
+                            </select>
+                            
+                            <button onclick="clearFilters()" class="px-4 py-2.5 text-sm font-semibold text-slate-600 hover:text-slate-900 flex items-center gap-x-1.5 border border-slate-300 rounded-3xl">
+                                <i class="fa-solid fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-auto max-h-[520px]">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-slate-200 bg-white text-xs">
+                                    <th onclick="sortList('employee')" class="px-4 sm:px-6 py-3 text-left font-bold text-slate-500 cursor-pointer">EMPLOYEE</th>
+                                    <th onclick="sortList('type')" class="px-4 sm:px-6 py-3 text-left font-bold text-slate-500 cursor-pointer">TYPE</th>
+                                    <th onclick="sortList('start')" class="px-4 sm:px-6 py-3 text-left font-bold text-slate-500 cursor-pointer hidden sm:table-cell">START</th>
+                                    <th onclick="sortList('end')" class="px-4 sm:px-6 py-3 text-left font-bold text-slate-500 cursor-pointer hidden md:table-cell">END</th>
+                                    <th onclick="sortList('duration')" class="px-4 sm:px-6 py-3 text-center font-bold text-slate-500 cursor-pointer">DAYS</th>
+                                    <th onclick="sortList('status')" class="px-4 sm:px-6 py-3 text-left font-bold text-slate-500 cursor-pointer">STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="list-table-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Day Detail Modal -->
+    <div id="day-modal" onclick="if (event.target.id === 'day-modal') hideDayModal()" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div onclick="event.stopImmediatePropagation()" class="modal bg-white w-full sm:rounded-3xl sm:shadow-2xl sm:max-w-lg rounded-t-3xl max-h-[85vh] flex flex-col">
+            <div class="px-5 sm:px-6 py-4 border-b flex items-center justify-between bg-slate-50 rounded-t-3xl">
+                <div>
+                    <div id="modal-date" class="font-display text-xl sm:text-2xl font-semibold text-slate-900"></div>
+                    <div id="modal-day-name" class="text-sm text-slate-500"></div>
+                </div>
+                <button onclick="hideDayModal()" class="w-9 h-9 flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-2xl transition-all">
+                    <i class="fa-solid fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-5 sm:p-6 overflow-auto flex-1" id="modal-content"></div>
+            
+            <div class="px-5 sm:px-6 py-3.5 border-t bg-slate-50 rounded-b-3xl text-xs text-slate-500 flex justify-between">
+                <div>Winchester Store</div>
+                <div id="modal-count"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="upload-modal" onclick="if (event.target.id === 'upload-modal') hideUploadModal()" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div onclick="event.stopImmediatePropagation()" class="modal bg-white w-full sm:rounded-3xl sm:shadow-2xl sm:max-w-md rounded-t-3xl">
+            <div class="p-5 sm:p-6">
+                <div class="flex justify-between items-start mb-5">
+                    <div>
+                        <h3 class="font-display text-xl font-semibold">Upload Holiday Data</h3>
+                        <p class="text-sm text-slate-500 mt-1">Paste or upload the tab-separated text</p>
+                    </div>
+                    <button onclick="hideUploadModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-times text-xl"></i></button>
+                </div>
+                
+                <div id="drop-zone" class="border-2 border-dashed border-slate-300 hover:border-indigo-400 rounded-3xl p-8 sm:p-10 text-center transition-all cursor-pointer mb-4 active:bg-indigo-50"
+                     ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" onclick="document.getElementById('file-input').click()">
+                    <i class="fa-solid fa-cloud-upload-alt text-4xl text-slate-400 mb-3"></i>
+                    <div class="font-semibold text-slate-700">Drop .txt file here</div>
+                    <div class="text-xs text-slate-500 mt-1">or click to browse</div>
+                    <input type="file" id="file-input" accept=".txt,text/plain" class="hidden" onchange="handleFileSelect(event)">
+                </div>
+                
+                <div class="text-center text-xs text-slate-400 mb-4">— or paste below —</div>
+                
+                <textarea id="paste-textarea" rows="5" placeholder="18/11/2025&#9;Holiday&#9;Winchester&#9;Alex Billimore&#9;28/08/2026&#9;31/08/2026&#9;Denied&#10;..." class="w-full text-xs font-mono p-4 border border-slate-300 rounded-2xl focus:outline-none focus:border-indigo-400 resize-y"></textarea>
+                
+                <div class="flex gap-x-3 mt-5">
+                    <button onclick="parseAndLoadData()" class="flex-1 py-3.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold rounded-3xl text-sm flex items-center justify-center gap-x-2 transition-all">
+                        <i class="fa-solid fa-sync-alt"></i>
+                        <span>Parse &amp; Load</span>
+                    </button>
+                    <button onclick="hideUploadModal()" class="px-6 py-3.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 rounded-3xl transition-all">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let leaves = [];
+        let currentView = 'calendar';
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+        let currentSort = { column: 'start', direction: 'asc' };
+
+        function getVisibleLeaves() {
+            return leaves.filter(l => l.status !== 'Denied');
+        }
+
+        function parseDate(dateStr) {
+            if (!dateStr) return null;
+            const [day, month, year] = dateStr.split('/').map(Number);
+            return new Date(year, month - 1, day);
+        }
+
+        function formatDate(dateStr) {
+            const date = parseDate(dateStr);
+            if (!date) return dateStr;
+            return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+        }
+
+        function getDaysBetween(startStr, endStr) {
+            const start = parseDate(startStr);
+            const end = parseDate(endStr);
+            if (!start || !end) return 1;
+            const diffTime = Math.abs(end - start);
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        }
+
+        function isDateInRange(dayDate, startStr, endStr) {
+            const start = parseDate(startStr);
+            const end = parseDate(endStr);
+            if (!start || !end || !dayDate) return false;
+            return dayDate >= start && dayDate <= end;
+        }
+
+        function getLeavesForDate(targetDate) {
+            return getVisibleLeaves().filter(leave => isDateInRange(targetDate, leave.start, leave.end));
+        }
+
+        function updateStats() {
+            const visible = getVisibleLeaves();
+            const uniqueEmployees = new Set(visible.map(l => l.employee)).size;
+            
+            document.getElementById('total-employees').textContent = uniqueEmployees;
+            document.getElementById('total-leaves').textContent = visible.length;
+            
+            const today = new Date(); today.setHours(0,0,0,0);
+            const future = new Date(today); future.setDate(future.getDate() + 30);
+            
+            let upcoming = 0;
+            visible.forEach(leave => {
+                const start = parseDate(leave.start);
+                if (start && start >= today && start <= future) upcoming++;
+            });
+            document.getElementById('upcoming-count').textContent = upcoming;
+            
+            let totalDays = 0;
+            visible.forEach(leave => totalDays += getDaysBetween(leave.start, leave.end));
+            document.getElementById('avg-duration').textContent = visible.length ? (totalDays / visible.length).toFixed(1) : '0';
+            
+            const approved = visible.filter(l => l.status === 'Approved').length;
+            const requested = visible.filter(l => l.status === 'Requested').length;
+            
+            document.getElementById('approved-count').innerHTML = `${approved} Approved`;
+            document.getElementById('requested-count').innerHTML = `${requested} Requested`;
+            
+            document.getElementById('approved-count-mobile').innerHTML = `${approved} Approved`;
+            document.getElementById('requested-count-mobile').innerHTML = `${requested} Requested`;
+        }
+
+        function renderCalendar(month, year) {
+            currentMonth = month;
+            currentYear = year;
+            
+            const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+            document.getElementById('calendar-month').textContent = monthNames[month];
+            document.getElementById('calendar-year').textContent = year;
+            
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+            
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date(); today.setHours(0,0,0,0);
+            
+            for (let i = 0; i < firstDay; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'calendar-day bg-white/50 border border-transparent rounded-2xl';
+                grid.appendChild(empty);
+            }
+            
+            for (let day = 1; day <= daysInMonth; day++) {
+                const cellDate = new Date(year, month, day);
+                cellDate.setHours(0,0,0,0);
+                const dayLeaves = getLeavesForDate(cellDate);
+                
+                const cell = document.createElement('div');
+                cell.className = `calendar-day bg-white border border-slate-200 rounded-2xl p-1.5 sm:p-2 flex flex-col cursor-pointer relative overflow-hidden active:bg-slate-100`;
+                
+                if (cellDate.getTime() === today.getTime()) {
+                    cell.classList.add('today', 'ring-2', 'ring-offset-1', 'ring-yellow-300');
+                }
+                
+                const dateNum = document.createElement('div');
+                dateNum.className = `text-xs sm:text-sm font-semibold ${cellDate.getTime() === today.getTime() ? 'text-yellow-600' : 'text-slate-700'}`;
+                dateNum.textContent = day;
+                cell.appendChild(dateNum);
+                
+                if (dayLeaves.length > 0) {
+                    const container = document.createElement('div');
+                    container.className = 'mt-1 flex flex-wrap gap-1 items-center';
+                    
+                    const holidayCount = dayLeaves.filter(l => l.type === 'Holiday').length;
+                    const unpaidCount = dayLeaves.filter(l => l.type === 'Unpaid Leave').length;
+                    
+                    if (holidayCount > 0) {
+                        const dot = document.createElement('div');
+                        dot.className = `leave-dot bg-emerald-500`;
+                        container.appendChild(dot);
+                        if (holidayCount > 1) {
+                            const c = document.createElement('span');
+                            c.className = 'text-[9px] font-bold text-emerald-600 -ml-0.5';
+                            c.textContent = holidayCount;
+                            container.appendChild(c);
+                        }
+                    }
+                    if (unpaidCount > 0) {
+                        const dot = document.createElement('div');
+                        dot.className = `leave-dot bg-amber-500 ml-0.5`;
+                        container.appendChild(dot);
+                        if (unpaidCount > 1) {
+                            const c = document.createElement('span');
+                            c.className = 'text-[9px] font-bold text-amber-600 -ml-0.5';
+                            c.textContent = unpaidCount;
+                            container.appendChild(c);
+                        }
+                    }
+                    
+                    if (dayLeaves.length <= 2) {
+                        const names = document.createElement('div');
+                        names.className = 'text-[8px] leading-none text-slate-500 font-medium mt-0.5 w-full truncate';
+                        names.textContent = dayLeaves.map(l => l.employee.split(' ').map(p => p[0]).join('')).join(', ');
+                        container.appendChild(names);
+                    } else {
+                        const more = document.createElement('div');
+                        more.className = 'text-[8px] font-bold text-indigo-600 bg-indigo-100 px-1 rounded mt-0.5';
+                        more.textContent = `+${dayLeaves.length}`;
+                        container.appendChild(more);
+                    }
+                    
+                    cell.appendChild(container);
+                    cell.onclick = () => showDayModal(cellDate, dayLeaves);
+                } else {
+                    cell.onclick = () => showDayModal(cellDate, []);
+                }
+                
+                grid.appendChild(cell);
+            }
+            
+            const remaining = (7 - ((firstDay + daysInMonth) % 7)) % 7;
+            for (let i = 0; i < remaining; i++) {
+                const empty = document.createElement('div');
+                empty.className = 'calendar-day bg-white/40 border border-transparent rounded-2xl';
+                grid.appendChild(empty);
+            }
+        }
+
+        function prevMonth() { currentMonth--; if (currentMonth < 0) { currentMonth = 11; currentYear--; } renderCalendar(currentMonth, currentYear); }
+        function nextMonth() { currentMonth++; if (currentMonth > 11) { currentMonth = 0; currentYear++; } renderCalendar(currentMonth, currentYear); }
+        function goToToday() { const t = new Date(); currentMonth = t.getMonth(); currentYear = t.getFullYear(); renderCalendar(currentMonth, currentYear); }
+        function jumpToMonth() { const [y, m] = document.getElementById('month-select').value.split('-').map(Number); currentYear = y; currentMonth = m; renderCalendar(currentMonth, currentYear); }
+
+        function populateMonthSelect() {
+            const select = document.getElementById('month-select');
+            select.innerHTML = '';
+            const startY = 2025, endY = 2027;
+            for (let y = startY; y <= endY; y++) {
+                for (let m = 0; m < 12; m++) {
+                    const opt = document.createElement('option');
+                    opt.value = `\( {y}- \){m}`;
+                    opt.textContent = `${new Date(y, m).toLocaleString('default', {month:'long'})} ${y}`;
+                    if (y === currentYear && m === currentMonth) opt.selected = true;
+                    select.appendChild(opt);
+                }
+            }
+        }
+
+        function showDayModal(date, dayLeaves) {
+            const modal = document.getElementById('day-modal');
+            const content = document.getElementById('modal-content');
+            
+            document.getElementById('modal-date').textContent = date.toLocaleDateString('en-GB', {day:'numeric', month:'long'});
+            document.getElementById('modal-day-name').textContent = date.toLocaleDateString('en-GB', {weekday:'long'});
+            content.innerHTML = '';
+            
+            if (dayLeaves.length === 0) {
+                content.innerHTML = '<div class="text-center py-8"><i class="fa-solid fa-calendar text-5xl text-slate-300 mb-4"></i><p class="text-slate-500">No one is on leave this day.</p></div>';
+                document.getElementById('modal-count').textContent = '0 leaves';
+            } else {
+                let html = '<div class="space-y-3">';
+                
+                for (let i = 0; i < dayLeaves.length; i++) {
+                    const leave = dayLeaves[i];
+                    const dur = getDaysBetween(leave.start, leave.end);
+                    
+                    let statusClass = '';
+                    if (leave.status === 'Approved') statusClass = 'status-approved';
+                    else if (leave.status === 'Requested') statusClass = 'status-requested';
+                    else statusClass = 'status-denied';
+                    
+                    let typeClass = '';
+                    if (leave.type === 'Holiday') typeClass = 'type-holiday';
+                    else typeClass = 'type-unpaid';
+                    
+                    let icon = (leave.type === 'Holiday') ? 'fa-umbrella-beach' : 'fa-hand-holding-usd';
+                    let color = (leave.type === 'Holiday') ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600';
+                    
+                    html += '<div class="border border-slate-200 rounded-2xl p-4 flex gap-4 bg-white">' +
+                        '<div class="w-9 h-9 rounded-2xl flex-shrink-0 flex items-center justify-center text-lg ' + color + '">' +
+                            '<i class="fa-solid ' + icon + '"></i>' +
+                        '</div>' +
+                        '<div class="flex-1 min-w-0">' +
+                            '<div class="flex justify-between items-start">' +
+                                '<div class="font-semibold">' + leave.employee + '</div>' +
+                                '<div class="px-2.5 py-px text-xs font-bold rounded-full ' + statusClass + '">' + leave.status + '</div>' +
+                            '</div>' +
+                            '<div class="flex items-center gap-x-2 mt-1">' +
+                                '<span class="px-2 py-px text-xs font-medium rounded ' + typeClass + '">' + leave.type + '</span>' +
+                                '<span class="text-xs text-slate-500">' + formatDate(leave.start) + ' — ' + formatDate(leave.end) + '</span>' +
+                            '</div>' +
+                            '<div class="mt-1.5 text-xs text-slate-500">' +
+                                '<span class="font-mono bg-slate-100 px-1.5 py-px rounded">' + dur + ' day' + (dur > 1 ? 's' : '') + '</span>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+                }
+                
+                html += '</div>';
+                content.innerHTML = html;
+                document.getElementById('modal-count').textContent = dayLeaves.length + ' on leave';
+            }
+            modal.style.display = 'flex';
+        }
+
+        function hideDayModal() {
+            document.getElementById('day-modal').style.display = 'none';
+        }
+
+        let filteredLeaves = [];
+
+        function renderList(filtered = null) {
+            const tbody = document.getElementById('list-table-body');
+            tbody.innerHTML = '';
+            const base = filtered || getVisibleLeaves();
+            
+            if (base.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-12 text-center text-slate-400">No matching records.</td></tr>';
+                return;
+            }
+            
+            for (let i = 0; i < base.length; i++) {
+                const leave = base[i];
+                const dur = getDaysBetween(leave.start, leave.end);
+                
+                let statusClass = '';
+                if (leave.status === 'Approved') statusClass = 'status-approved';
+                else if (leave.status === 'Requested') statusClass = 'status-requested';
+                else statusClass = 'status-denied';
+                
+                let typeClass = (leave.type === 'Holiday') ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700';
+                
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-slate-50 active:bg-slate-100';
+                row.innerHTML = 
+                    '<td class="px-4 sm:px-6 py-4 font-medium">' + leave.employee + '</td>' +
+                    '<td class="px-4 sm:px-6 py-4"><span class="inline-flex px-2.5 py-1 text-xs font-semibold rounded-2xl ' + typeClass + '">' + leave.type + '</span></td>' +
+                    '<td class="px-4 sm:px-6 py-4 text-sm text-slate-600 hidden sm:table-cell">' + formatDate(leave.start) + '</td>' +
+                    '<td class="px-4 sm:px-6 py-4 text-sm text-slate-600 hidden md:table-cell">' + formatDate(leave.end) + '</td>' +
+                    '<td class="px-4 sm:px-6 py-4 text-center"><span class="px-2 py-px text-xs font-bold bg-slate-100 rounded">' + dur + 'd</span></td>' +
+                    '<td class="px-4 sm:px-6 py-4"><span class="px-2.5 py-1 text-xs font-bold rounded-full ' + statusClass + '">' + leave.status + '</span></td>';
+                tbody.appendChild(row);
+            }
+            filteredLeaves = base;
+        }
+
+        function filterList() {
+            const search = document.getElementById('search-input').value.toLowerCase().trim();
+            const typeF = document.getElementById('filter-type').value;
+            const statusF = document.getElementById('filter-status').value;
+            
+            let f = getVisibleLeaves();
+            if (search) f = f.filter(l => l.employee.toLowerCase().includes(search));
+            if (typeF) f = f.filter(l => l.type === typeF);
+            if (statusF) f = f.filter(l => l.status === statusF);
+            renderList(f);
+        }
+
+        function clearFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('filter-type').value = '';
+            document.getElementById('filter-status').value = '';
+            renderList(getVisibleLeaves());
+        }
+
+        function sortList(col) {
+            if (currentSort.column === col) currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            else { currentSort.column = col; currentSort.direction = 'asc'; }
+            
+            const sorted = [...(filteredLeaves.length ? filteredLeaves : getVisibleLeaves())];
+            sorted.sort((a, b) => {
+                let va, vb;
+                if (col === 'duration') { va = getDaysBetween(a.start, a.end); vb = getDaysBetween(b.start, b.end); }
+                else if (['start','end'].includes(col)) { va = parseDate(a[col]); vb = parseDate(b[col]); }
+                else { va = a[col] || ''; vb = b[col] || ''; }
+                
+                if (va < vb) return currentSort.direction === 'asc' ? -1 : 1;
+                if (va > vb) return currentSort.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+            renderList(sorted);
+        }
+
+        function showUploadModal() {
+            document.getElementById('upload-modal').style.display = 'flex';
+            setTimeout(() => document.getElementById('paste-textarea').focus(), 300);
+        }
+
+        function hideUploadModal() {
+            document.getElementById('upload-modal').style.display = 'none';
+            document.getElementById('paste-textarea').value = '';
+        }
+
+        function handleDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('border-indigo-500','bg-indigo-50'); }
+        function handleDragLeave(e) { e.currentTarget.classList.remove('border-indigo-500','bg-indigo-50'); }
+        function handleDrop(e) { e.preventDefault(); const zone = e.currentTarget; zone.classList.remove('border-indigo-500','bg-indigo-50'); const f = e.dataTransfer.files[0]; if (f) readFileAndParse(f); }
+        function handleFileSelect(e) { const f = e.target.files[0]; if (f) readFileAndParse(f); }
+
+        function readFileAndParse(file) {
+            const reader = new FileReader();
+            reader.onload = ev => { parseTextData(ev.target.result); hideUploadModal(); };
+            reader.readAsText(file);
+        }
+
+        function parseTextData(text) {
+            const lines = text.trim().split(/\r?\n/);
+            const newLeaves = [];
+            
+            for (let line of lines) {
+                line = line.trim();
+                if (!line || line.toLowerCase().includes('created') && line.toLowerCase().includes('type')) continue;
+                
+                const parts = line.split(/\t|\s{2,}/).filter(p => p.trim());
+                if (parts.length >= 7) {
+                    const [created, type, store, employee, start, end, status] = parts;
+                    if (created.match(/\d{2}\/\d{2}\/\d{4}/) && (type === 'Holiday' || type === 'Unpaid Leave') && employee && start.match(/\d{2}\/\d{2}\/\d{4}/) && end.match(/\d{2}\/\d{2}\/\d{4}/)) {
+                        newLeaves.push({
+                            created: created.trim(),
+                            type: type.trim(),
+                            store: store.trim() || 'Winchester',
+                            employee: employee.trim(),
+                            start: start.trim(),
+                            end: end.trim(),
+                            status: (status || 'Requested').trim()
+                        });
+                    }
+                }
+            }
+            
+            if (newLeaves.length > 0) {
+                leaves = newLeaves;
+                localStorage.setItem('winchesterLeaves', JSON.stringify(leaves));
+                updateUIAfterDataChange();
+                showToast('Loaded ' + newLeaves.length + ' records successfully!', 'success');
+            } else {
+                showToast('No valid records found.', 'error');
+            }
+        }
+
+        function parseAndLoadData() {
+            const text = document.getElementById('paste-textarea').value.trim();
+            if (!text) { showToast('Please paste data or upload a file.', 'error'); return; }
+            parseTextData(text);
+            hideUploadModal();
+        }
+
+        function updateUIAfterDataChange() {
+            const empty = document.getElementById('empty-state');
+            const main = document.getElementById('main-content');
+            
+            if (getVisibleLeaves().length > 0) {
+                empty.classList.add('hidden');
+                main.classList.remove('hidden');
+                updateStats();
+                populateMonthSelect();
+                renderCalendar(currentMonth, currentYear);
+                if (!document.getElementById('list-view').classList.contains('hidden')) renderList();
+            } else {
+                empty.classList.remove('hidden');
+                main.classList.add('hidden');
+            }
+        }
+
+        function showToast(msg, type) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-5 right-5 px-5 py-3.5 rounded-3xl shadow-xl text-sm font-medium flex items-center gap-x-3 z-[200] ' + (type === 'success' ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white');
+            toast.innerHTML = '<i class="fa-solid ' + (type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle') + ' text-lg"></i> <span>' + msg + '</span>';
+            document.body.appendChild(toast);
+            setTimeout(function() {
+                toast.style.transition = 'all .3s';
+                toast.style.opacity = '0';
+                setTimeout(function() { toast.remove(); }, 250);
+            }, 2600);
+        }
+
+        function downloadData() {
+            if (!leaves.length) { showToast('Nothing to export.', 'error'); return; }
+            let txt = "Created\tType\tStore\tEmployee\tStart Date\tEnd Date\tStatus\n";
+            leaves.forEach(l => txt += l.created + '\t' + l.type + '\t' + l.store + '\t' + l.employee + '\t' + l.start + '\t' + l.end + '\t' + l.status + '\n');
+            const blob = new Blob([txt], {type:'text/plain'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'winchester-holidays-' + new Date().toISOString().split('T')[0] + '.txt';
+            a.click(); URL.revokeObjectURL(url);
+            showToast('Data exported!');
+        }
+
+        function clearAllData() {
+            if (!leaves.length || !confirm('Clear all data?')) return;
+            leaves = [];
+            localStorage.removeItem('winchesterLeaves');
+            updateUIAfterDataChange();
+            showToast('All data cleared.', 'success');
+        }
+
+        function switchView(view) {
+            const cal = document.getElementById('calendar-view');
+            const list = document.getElementById('list-view');
+            const btnCal = document.getElementById('btn-calendar');
+            const btnList = document.getElementById('btn-list');
+            
+            if (view === 'calendar') {
+                cal.classList.remove('hidden');
+                list.classList.add('hidden');
+                btnCal.classList.add('nav-active');
+                btnList.classList.remove('nav-active');
+                currentView = 'calendar';
+                renderCalendar(currentMonth, currentYear);
+            } else {
+                cal.classList.add('hidden');
+                list.classList.remove('hidden');
+                btnList.classList.add('nav-active');
+                btnCal.classList.remove('nav-active');
+                currentView = 'list';
+                renderList(getVisibleLeaves());
+            }
+        }
+
+        function loadSavedData() {
+            const saved = localStorage.getItem('winchesterLeaves');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    if (parsed && parsed.length) {
+                        leaves = parsed;
+                        return true;
+                    }
+                } catch(e) {}
+            }
+            return false;
+        }
+
+        function init() {
+            const hasSaved = loadSavedData();
+            
+            const empty = document.getElementById('empty-state');
+            const main = document.getElementById('main-content');
+            
+            if (hasSaved && getVisibleLeaves().length > 0) {
+                empty.classList.add('hidden');
+                main.classList.remove('hidden');
+                updateStats();
+                populateMonthSelect();
+                renderCalendar(currentMonth, currentYear);
+            } else {
+                empty.classList.remove('hidden');
+                main.classList.add('hidden');
+            }
+            
+            document.addEventListener('keydown', function(e) {
+                if (e.key === '/' && document.activeElement.tagName === 'BODY') {
+                    e.preventDefault();
+                    if (!main.classList.contains('hidden')) {
+                        if (currentView === 'list') document.getElementById('search-input').focus();
+                        else { switchView('list'); setTimeout(function() { document.getElementById('search-input').focus(); }, 80); }
+                    }
+                }
+                if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'u') {
+                    e.preventDefault();
+                    showUploadModal();
+                }
+            });
+            
+            console.log('%c[Winchester Holiday Calendar] Ready - paste your new text to load data', 'color:#64748b');
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
