@@ -116,7 +116,7 @@
         </div>
     </div>
 
-    <!-- Day Detail Modal -->
+    <!-- Day Detail Modal (no footer) -->
     <div id="day-modal" onclick="if (event.target.id === 'day-modal') hideDayModal()" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
         <div onclick="event.stopImmediatePropagation()" class="modal bg-white w-full sm:rounded-3xl sm:shadow-2xl sm:max-w-lg rounded-t-3xl max-h-[85vh] flex flex-col">
             <div class="px-5 sm:px-6 py-4 border-b flex items-center justify-between bg-slate-50 rounded-t-3xl">
@@ -130,10 +130,6 @@
             </div>
             
             <div class="p-5 sm:p-6 overflow-auto flex-1" id="modal-content"></div>
-            
-            <div class="px-5 sm:px-6 py-3.5 border-t bg-slate-50 rounded-b-3xl text-xs text-slate-500 flex justify-between">
-                <div id="modal-count"></div>
-            </div>
         </div>
     </div>
 
@@ -378,7 +374,6 @@
             
             if (dayLeaves.length === 0) {
                 content.innerHTML = '<div class="text-center py-8"><i class="fa-solid fa-calendar text-5xl text-slate-300 mb-4"></i><p class="text-slate-500">No one is on leave this day.</p></div>';
-                document.getElementById('modal-count').textContent = '0 leaves';
             } else {
                 let html = '<div class="space-y-3">';
                 for (let i = 0; i < dayLeaves.length; i++) {
@@ -410,7 +405,6 @@
                 }
                 html += '</div>';
                 content.innerHTML = html;
-                document.getElementById('modal-count').textContent = dayLeaves.length + ' leaves';
             }
             modal.style.display = 'flex';
         }
