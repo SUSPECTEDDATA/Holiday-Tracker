@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Winchester • Holiday Calendar</title>
+    <title>Holiday Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -33,8 +33,7 @@
                     <i class="fa-solid fa-calendar-check text-white text-2xl"></i>
                 </div>
                 <div>
-                    <h1 class="font-display text-2xl font-semibold text-slate-900">Winchester</h1>
-                    <p class="text-xs text-slate-500 -mt-1">Holiday Tracker</p>
+                    <h1 class="font-display text-2xl font-semibold text-slate-900">Holiday Tracker</h1>
                 </div>
             </div>
         </div>
@@ -133,7 +132,6 @@
             <div class="p-5 sm:p-6 overflow-auto flex-1" id="modal-content"></div>
             
             <div class="px-5 sm:px-6 py-3.5 border-t bg-slate-50 rounded-b-3xl text-xs text-slate-500 flex justify-between">
-                <div>Winchester Store</div>
                 <div id="modal-count"></div>
             </div>
         </div>
@@ -412,7 +410,7 @@
                 }
                 html += '</div>';
                 content.innerHTML = html;
-                document.getElementById('modal-count').textContent = dayLeaves.length + ' on leave';
+                document.getElementById('modal-count').textContent = dayLeaves.length + ' leaves';
             }
             modal.style.display = 'flex';
         }
