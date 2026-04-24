@@ -117,21 +117,7 @@
             </div>
         </div>
 
-        <!-- Empty State -->
-        <div id="empty-state" class="flex flex-col items-center justify-center py-16 text-center">
-            <div class="w-20 h-20 bg-indigo-100 rounded-3xl flex items-center justify-center mb-6">
-                <i class="fa-solid fa-calendar-plus text-indigo-600 text-5xl"></i>
-            </div>
-            <h2 class="text-3xl font-semibold text-slate-900 mb-3">No holiday data yet</h2>
-            <p class="text-slate-500 max-w-md mb-8">Upload your holiday export to see the calendar.</p>
-            
-            <button onclick="showUploadModal()" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-3xl flex items-center gap-x-3 text-lg transition-all active:scale-[0.985] shadow-lg shadow-indigo-200">
-                <i class="fa-solid fa-upload text-xl"></i>
-                <span>Upload Holiday Data</span>
-            </button>
-        </div>
-
-        <div id="main-content" class="hidden">
+        <div id="main-content">
             
             <div class="flex justify-center mb-5">
                 <div class="inline-flex bg-slate-100 rounded-3xl p-1 shadow-inner">
@@ -290,7 +276,7 @@
                 
                 <div class="text-center text-xs text-slate-400 mb-4">— or paste below —</div>
                 
-                <textarea id="paste-textarea" rows="5" placeholder="18/11/2025&#9;Holiday&#9;Winchester&#9;Alex Billimore&#9;28/08/2026&#9;31/08/2026&#9;Denied&#10;..." class="w-full text-xs font-mono p-4 border border-slate-300 rounded-2xl focus:outline-none focus:border-indigo-400 resize-y"></textarea>
+                <textarea id="paste-textarea" rows="5" placeholder="Paste new data here..." class="w-full text-xs font-mono p-4 border border-slate-300 rounded-2xl focus:outline-none focus:border-indigo-400 resize-y"></textarea>
                 
                 <div class="flex gap-x-3 mt-5">
                     <button onclick="parseAndLoadData()" class="flex-1 py-3.5 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold rounded-3xl text-sm flex items-center justify-center gap-x-2 transition-all">
@@ -304,7 +290,70 @@
     </div>
 
     <script>
-        let leaves = [];
+        // ========== YOUR NEW DATA HARDCODED ==========
+        let leaves = [
+            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"28/08/2026","end":"31/08/2026","status":"Denied"},
+            {"created":"17/04/2026","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"15/08/2026","end":"16/08/2026","status":"Requested"},
+            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"10/08/2026","end":"11/08/2026","status":"Approved"},
+            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"17/07/2026","end":"19/07/2026","status":"Approved"},
+            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"13/07/2026","end":"15/07/2026","status":"Approved"},
+            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"10/07/2026","end":"12/07/2026","status":"Approved"},
+            {"created":"17/04/2026","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"22/06/2026","end":"22/06/2026","status":"Requested"},
+            {"created":"22/04/2026","type":"Unpaid Leave","store":"Winchester","employee":"Harry Hancock","start":"16/06/2026","end":"16/06/2026","status":"Requested"},
+            {"created":"17/04/2026","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"15/06/2026","end":"15/06/2026","status":"Requested"},
+            {"created":"22/04/2026","type":"Holiday","store":"Winchester","employee":"Harry Hancock","start":"29/05/2026","end":"05/06/2026","status":"Requested"},
+            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"28/05/2026","end":"31/05/2026","status":"Denied"},
+            {"created":"23/04/2026","type":"Holiday","store":"Winchester","employee":"Oliver Smith","start":"24/05/2026","end":"25/05/2026","status":"Requested"},
+            {"created":"06/03/2026","type":"Holiday","store":"Winchester","employee":"Jacek Kij","start":"22/05/2026","end":"30/05/2026","status":"Approved"},
+            {"created":"06/04/2026","type":"Holiday","store":"Winchester","employee":"Mark Butcher","start":"15/05/2026","end":"15/05/2026","status":"Approved"},
+            {"created":"24/04/2026","type":"Holiday","store":"Winchester","employee":"Misbah Riaz","start":"11/05/2026","end":"16/05/2026","status":"Requested"},
+            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"30/04/2026","end":"04/05/2026","status":"Approved"},
+            {"created":"26/03/2026","type":"Unpaid Leave","store":"Winchester","employee":"James Jones","start":"24/04/2026","end":"25/04/2026","status":"Approved"},
+            {"created":"07/05/2025","type":"Holiday","store":"Winchester","employee":"Matthew Critchley","start":"17/04/2026","end":"19/04/2026","status":"Approved"},
+            {"created":"05/02/2026","type":"Holiday","store":"Winchester","employee":"Jan Maudsley","start":"04/04/2026","end":"08/04/2026","status":"Approved"},
+            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"02/04/2026","end":"05/04/2026","status":"Denied"},
+            {"created":"21/02/2026","type":"Holiday","store":"Winchester","employee":"James Walkinshaw","start":"20/03/2026","end":"23/03/2026","status":"Approved"},
+            {"created":"26/02/2026","type":"Holiday","store":"Winchester","employee":"Mark Butcher","start":"17/03/2026","end":"17/03/2026","status":"Approved"},
+            {"created":"07/12/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"16/03/2026","end":"18/03/2026","status":"Approved"},
+            {"created":"07/02/2026","type":"Holiday","store":"Winchester","employee":"Florin Paun","start":"03/03/2026","end":"10/03/2026","status":"Approved"},
+            {"created":"21/02/2026","type":"Holiday","store":"Winchester","employee":"Zeshan Rasool","start":"02/03/2026","end":"02/03/2026","status":"Approved"},
+            {"created":"07/12/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"06/02/2026","end":"08/02/2026","status":"Approved"},
+            {"created":"12/10/2025","type":"Holiday","store":"Winchester","employee":"James Jones","start":"02/02/2026","end":"08/02/2026","status":"Approved"},
+            {"created":"07/12/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"22/01/2026","end":"23/01/2026","status":"Denied"},
+            {"created":"24/09/2025","type":"Unpaid Leave","store":"Winchester","employee":"Matthew Critchley","start":"08/01/2026","end":"08/01/2026","status":"Approved"},
+            {"created":"23/10/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"05/01/2026","end":"18/01/2026","status":"Denied"},
+            {"created":"07/12/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"05/01/2026","end":"11/01/2026","status":"Approved"},
+            {"created":"23/09/2025","type":"Holiday","store":"Winchester","employee":"Misbah Riaz","start":"04/01/2026","end":"19/01/2026","status":"Approved"},
+            {"created":"09/12/2025","type":"Holiday","store":"Winchester","employee":"Jan Maudsley","start":"03/01/2026","end":"07/01/2026","status":"Approved"},
+            {"created":"18/11/2025","type":"Unpaid Leave","store":"Winchester","employee":"Alex Billimore","start":"01/01/2026","end":"01/01/2026","status":"Approved"},
+            {"created":"03/12/2025","type":"Holiday","store":"Winchester","employee":"Jan Maudsley","start":"25/12/2025","end":"25/12/2025","status":"Denied"},
+            {"created":"03/12/2025","type":"Holiday","store":"Winchester","employee":"James Walkinshaw","start":"25/12/2025","end":"25/12/2025","status":"Approved"},
+            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Mark Butcher","start":"20/12/2025","end":"03/01/2026","status":"Approved"},
+            {"created":"12/10/2025","type":"Unpaid Leave","store":"Winchester","employee":"James Jones","start":"08/12/2025","end":"11/12/2025","status":"Approved"},
+            {"created":"18/08/2025","type":"Holiday","store":"Winchester","employee":"James Jones","start":"17/11/2025","end":"25/11/2025","status":"Denied"},
+            {"created":"14/10/2025","type":"Unpaid Leave","store":"Winchester","employee":"Matthew Critchley","start":"09/11/2025","end":"09/11/2025","status":"Approved"},
+            {"created":"12/10/2025","type":"Unpaid Leave","store":"Winchester","employee":"James Jones","start":"09/11/2025","end":"12/11/2025","status":"Denied"},
+            {"created":"13/09/2025","type":"Unpaid Leave","store":"Winchester","employee":"Matthew Critchley","start":"13/10/2025","end":"14/10/2025","status":"Denied"},
+            {"created":"28/07/2025","type":"Holiday","store":"Winchester","employee":"Mark Butcher","start":"26/09/2025","end":"26/09/2025","status":"Denied"},
+            {"created":"07/08/2025","type":"Unpaid Leave","store":"Winchester","employee":"Alex Billimore","start":"10/09/2025","end":"10/09/2025","status":"Denied"},
+            {"created":"14/08/2025","type":"Holiday","store":"Winchester","employee":"Clay Dudley","start":"08/09/2025","end":"14/09/2025","status":"Approved"},
+            {"created":"14/07/2025","type":"Unpaid Leave","store":"Winchester","employee":"Florin Paun","start":"17/08/2025","end":"30/08/2025","status":"Approved"},
+            {"created":"17/08/2024","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"11/08/2025","end":"17/08/2025","status":"Approved"},
+            {"created":"10/04/2025","type":"Holiday","store":"Winchester","employee":"Matthew Critchley","start":"04/08/2025","end":"17/08/2025","status":"Approved"},
+            {"created":"21/05/2025","type":"Holiday","store":"Winchester","employee":"Jan Maudsley","start":"01/08/2025","end":"01/08/2025","status":"Approved"},
+            {"created":"17/08/2024","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"28/07/2025","end":"03/08/2025","status":"Approved"},
+            {"created":"17/08/2024","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"17/07/2025","end":"19/07/2025","status":"Approved"},
+            {"created":"10/04/2025","type":"Holiday","store":"Winchester","employee":"Matthew Critchley","start":"14/07/2025","end":"20/07/2025","status":"Approved"},
+            {"created":"21/05/2025","type":"Holiday","store":"Winchester","employee":"Jan Maudsley","start":"05/07/2025","end":"16/07/2025","status":"Approved"},
+            {"created":"11/04/2025","type":"Holiday","store":"Winchester","employee":"Matthew Critchley","start":"28/06/2025","end":"28/06/2025","status":"Approved"},
+            {"created":"06/05/2025","type":"Holiday","store":"Winchester","employee":"Mark Butcher","start":"25/06/2025","end":"06/07/2025","status":"Approved"},
+            {"created":"17/08/2024","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"23/06/2025","end":"29/06/2025","status":"Approved"},
+            {"created":"02/04/2025","type":"Holiday","store":"Winchester","employee":"James Jones","start":"17/06/2025","end":"25/06/2025","status":"Approved"},
+            {"created":"17/08/2024","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"16/06/2025","end":"22/06/2025","status":"Approved"},
+            {"created":"18/05/2025","type":"Holiday","store":"Winchester","employee":"Jan Maudsley","start":"11/06/2025","end":"12/06/2025","status":"Approved"},
+            {"created":"10/04/2025","type":"Holiday","store":"Winchester","employee":"Matthew Critchley","start":"09/06/2025","end":"15/06/2025","status":"Approved"}
+        ];
+
         let currentView = 'calendar';
         let currentMonth = new Date().getMonth();
         let currentYear = new Date().getFullYear();
@@ -506,20 +555,11 @@
                 document.getElementById('modal-count').textContent = '0 leaves';
             } else {
                 let html = '<div class="space-y-3">';
-                
                 for (let i = 0; i < dayLeaves.length; i++) {
                     const leave = dayLeaves[i];
                     const dur = getDaysBetween(leave.start, leave.end);
-                    
-                    let statusClass = '';
-                    if (leave.status === 'Approved') statusClass = 'status-approved';
-                    else if (leave.status === 'Requested') statusClass = 'status-requested';
-                    else statusClass = 'status-denied';
-                    
-                    let typeClass = '';
-                    if (leave.type === 'Holiday') typeClass = 'type-holiday';
-                    else typeClass = 'type-unpaid';
-                    
+                    let statusClass = (leave.status === 'Approved') ? 'status-approved' : (leave.status === 'Requested') ? 'status-requested' : 'status-denied';
+                    let typeClass = (leave.type === 'Holiday') ? 'type-holiday' : 'type-unpaid';
                     let icon = (leave.type === 'Holiday') ? 'fa-umbrella-beach' : 'fa-hand-holding-usd';
                     let color = (leave.type === 'Holiday') ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600';
                     
@@ -542,7 +582,6 @@
                         '</div>' +
                     '</div>';
                 }
-                
                 html += '</div>';
                 content.innerHTML = html;
                 document.getElementById('modal-count').textContent = dayLeaves.length + ' on leave';
@@ -569,12 +608,7 @@
             for (let i = 0; i < base.length; i++) {
                 const leave = base[i];
                 const dur = getDaysBetween(leave.start, leave.end);
-                
-                let statusClass = '';
-                if (leave.status === 'Approved') statusClass = 'status-approved';
-                else if (leave.status === 'Requested') statusClass = 'status-requested';
-                else statusClass = 'status-denied';
-                
+                let statusClass = (leave.status === 'Approved') ? 'status-approved' : (leave.status === 'Requested') ? 'status-requested' : 'status-denied';
                 let typeClass = (leave.type === 'Holiday') ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700';
                 
                 const row = document.createElement('tr');
@@ -692,20 +726,12 @@
         }
 
         function updateUIAfterDataChange() {
-            const empty = document.getElementById('empty-state');
             const main = document.getElementById('main-content');
-            
-            if (getVisibleLeaves().length > 0) {
-                empty.classList.add('hidden');
-                main.classList.remove('hidden');
-                updateStats();
-                populateMonthSelect();
-                renderCalendar(currentMonth, currentYear);
-                if (!document.getElementById('list-view').classList.contains('hidden')) renderList();
-            } else {
-                empty.classList.remove('hidden');
-                main.classList.add('hidden');
-            }
+            main.classList.remove('hidden');
+            updateStats();
+            populateMonthSelect();
+            renderCalendar(currentMonth, currentYear);
+            if (!document.getElementById('list-view').classList.contains('hidden')) renderList();
         }
 
         function showToast(msg, type) {
@@ -733,11 +759,10 @@
         }
 
         function clearAllData() {
-            if (!leaves.length || !confirm('Clear all data?')) return;
+            if (!confirm('Clear all data?')) return;
             leaves = [];
             localStorage.removeItem('winchesterLeaves');
-            updateUIAfterDataChange();
-            showToast('All data cleared.', 'success');
+            location.reload();
         }
 
         function switchView(view) {
@@ -763,44 +788,19 @@
             }
         }
 
-        function loadSavedData() {
-            const saved = localStorage.getItem('winchesterLeaves');
-            if (saved) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    if (parsed && parsed.length) {
-                        leaves = parsed;
-                        return true;
-                    }
-                } catch(e) {}
-            }
-            return false;
-        }
-
         function init() {
-            const hasSaved = loadSavedData();
-            
-            const empty = document.getElementById('empty-state');
             const main = document.getElementById('main-content');
+            main.classList.remove('hidden');
             
-            if (hasSaved && getVisibleLeaves().length > 0) {
-                empty.classList.add('hidden');
-                main.classList.remove('hidden');
-                updateStats();
-                populateMonthSelect();
-                renderCalendar(currentMonth, currentYear);
-            } else {
-                empty.classList.remove('hidden');
-                main.classList.add('hidden');
-            }
+            updateStats();
+            populateMonthSelect();
+            renderCalendar(currentMonth, currentYear);
             
             document.addEventListener('keydown', function(e) {
                 if (e.key === '/' && document.activeElement.tagName === 'BODY') {
                     e.preventDefault();
-                    if (!main.classList.contains('hidden')) {
-                        if (currentView === 'list') document.getElementById('search-input').focus();
-                        else { switchView('list'); setTimeout(function() { document.getElementById('search-input').focus(); }, 80); }
-                    }
+                    if (currentView === 'list') document.getElementById('search-input').focus();
+                    else { switchView('list'); setTimeout(function() { document.getElementById('search-input').focus(); }, 80); }
                 }
                 if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'u') {
                     e.preventDefault();
@@ -808,7 +808,7 @@
                 }
             });
             
-            console.log('%c[Winchester Holiday Calendar] Ready - paste your new text to load data', 'color:#64748b');
+            console.log('%c[Winchester Holiday Calendar] Your new data is now hardcoded and loaded!', 'color:#64748b');
         }
 
         window.onload = init;
