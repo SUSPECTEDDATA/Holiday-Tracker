@@ -24,100 +24,94 @@
     </style>
 </head>
 <body class="bg-slate-50">
-    <!-- Header - Clean & Simple -->
+    
+    <!-- Header -->
     <div class="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
             <div class="flex items-center gap-x-3">
-                <div class="w-10 h-10 sm:w-11 sm:h-11 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200 flex-shrink-0">
-                    <i class="fa-solid fa-calendar-check text-white text-2xl sm:text-3xl"></i>
+                <div class="w-10 h-10 bg-indigo-600 rounded-2xl flex items-center justify-center">
+                    <i class="fa-solid fa-calendar-check text-white text-2xl"></i>
                 </div>
                 <div>
-                    <h1 class="font-display text-2xl sm:text-3xl font-semibold tracking-tighter text-slate-900">Winchester</h1>
+                    <h1 class="font-display text-2xl font-semibold text-slate-900">Winchester</h1>
                     <p class="text-xs text-slate-500 -mt-1">Holiday Tracker</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-5 pb-10">
+    <div class="max-w-7xl mx-auto px-4 pt-5 pb-10">
         
         <!-- Stats -->
-        <div class="hidden sm:grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
-                <div class="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+        <div class="hidden sm:grid grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-3xl p-5 border flex items-center gap-4">
+                <div class="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center">
                     <i class="fa-solid fa-user-check text-emerald-600 text-2xl"></i>
                 </div>
                 <div>
-                    <div class="text-3xl font-semibold text-slate-900" id="total-employees">0</div>
+                    <div class="text-3xl font-semibold" id="total-employees">0</div>
                     <div class="text-sm text-slate-500">Team Members</div>
                 </div>
             </div>
-            <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
-                <div class="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+            <div class="bg-white rounded-3xl p-5 border flex items-center gap-4">
+                <div class="w-12 h-12 bg-indigo-100 rounded-2xl flex items-center justify-center">
                     <i class="fa-solid fa-calendar-day text-indigo-600 text-2xl"></i>
                 </div>
                 <div>
-                    <div class="text-3xl font-semibold text-slate-900" id="total-leaves">0</div>
+                    <div class="text-3xl font-semibold" id="total-leaves">0</div>
                     <div class="text-sm text-slate-500">Total Requests</div>
                 </div>
             </div>
-            <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
-                <div class="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+            <div class="bg-white rounded-3xl p-5 border flex items-center gap-4">
+                <div class="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center">
                     <i class="fa-solid fa-clock text-amber-600 text-2xl"></i>
                 </div>
                 <div>
-                    <div class="text-3xl font-semibold text-slate-900" id="upcoming-count">0</div>
-                    <div class="text-sm text-slate-500">Upcoming (30 days)</div>
+                    <div class="text-3xl font-semibold" id="upcoming-count">0</div>
+                    <div class="text-sm text-slate-500">Upcoming</div>
                 </div>
             </div>
-            <div class="bg-white rounded-3xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
-                <div class="w-12 h-12 bg-violet-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+            <div class="bg-white rounded-3xl p-5 border flex items-center gap-4">
+                <div class="w-12 h-12 bg-violet-100 rounded-2xl flex items-center justify-center">
                     <i class="fa-solid fa-chart-line text-violet-600 text-2xl"></i>
                 </div>
                 <div>
-                    <div class="text-3xl font-semibold text-slate-900" id="avg-duration">0</div>
-                    <div class="text-sm text-slate-500">Avg. Days / Leave</div>
+                    <div class="text-3xl font-semibold" id="avg-duration">0</div>
+                    <div class="text-sm text-slate-500">Avg Days</div>
                 </div>
             </div>
         </div>
 
-        <!-- Calendar Header - CENTERED (No Today button) -->
+        <!-- Calendar Header - CENTERED -->
         <div class="flex justify-center mb-4">
             <div class="flex items-center gap-x-4">
-                <button onclick="prevMonth()" class="w-11 h-11 flex items-center justify-center text-slate-600 hover:bg-slate-100 active:bg-slate-200 rounded-2xl transition-all text-xl">
-                    <i class="fa-solid fa-chevron-left"></i>
-                </button>
-                
+                <button onclick="prevMonth()" class="w-11 h-11 flex items-center justify-center text-xl">←</button>
                 <div class="flex items-baseline gap-x-3 px-8">
-                    <h2 id="calendar-month" class="font-display text-3xl sm:text-4xl font-semibold text-slate-900 tracking-tight text-center"></h2>
-                    <span id="calendar-year" class="font-mono text-3xl sm:text-4xl text-slate-400"></span>
+                    <h2 id="calendar-month" class="font-display text-4xl font-semibold text-center"></h2>
+                    <span id="calendar-year" class="font-mono text-4xl text-slate-400"></span>
                 </div>
-                
-                <button onclick="nextMonth()" class="w-11 h-11 flex items-center justify-center text-slate-600 hover:bg-slate-100 active:bg-slate-200 rounded-2xl transition-all text-xl">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </button>
+                <button onclick="nextMonth()" class="w-11 h-11 flex items-center justify-center text-xl">→</button>
             </div>
         </div>
 
-        <!-- CALENDAR VIEW -->
+        <!-- CALENDAR -->
         <div class="max-w-[900px] mx-auto">
-            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-                <div class="grid grid-cols-7 bg-slate-100 border-b border-slate-200 text-xs">
-                    <div class="text-center py-2.5 font-bold text-slate-500">SUN</div>
-                    <div class="text-center py-2.5 font-bold text-slate-500">MON</div>
-                    <div class="text-center py-2.5 font-bold text-slate-500">TUE</div>
-                    <div class="text-center py-2.5 font-bold text-slate-500">WED</div>
-                    <div class="text-center py-2.5 font-bold text-slate-500">THU</div>
-                    <div class="text-center py-2.5 font-bold text-slate-500">FRI</div>
-                    <div class="text-center py-2.5 font-bold text-slate-500">SAT</div>
+            <div class="bg-white rounded-3xl border overflow-hidden">
+                <div class="grid grid-cols-7 bg-slate-100 text-xs">
+                    <div class="text-center py-2.5 font-bold">SUN</div>
+                    <div class="text-center py-2.5 font-bold">MON</div>
+                    <div class="text-center py-2.5 font-bold">TUE</div>
+                    <div class="text-center py-2.5 font-bold">WED</div>
+                    <div class="text-center py-2.5 font-bold">THU</div>
+                    <div class="text-center py-2.5 font-bold">FRI</div>
+                    <div class="text-center py-2.5 font-bold">SAT</div>
                 </div>
-                
                 <div id="calendar-grid" class="grid grid-cols-7 gap-px bg-slate-200 p-1"></div>
             </div>
             
-            <div class="flex flex-wrap justify-center items-center gap-x-5 gap-y-1 mt-4 text-xs text-slate-500">
-                <div class="flex items-center gap-x-2"><div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div><span>Holiday</span></div>
-                <div class="flex items-center gap-x-2"><div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div><span>Unpaid Leave</span></div>
+            <div class="flex justify-center gap-x-5 mt-4 text-xs text-slate-500">
+                <div class="flex items-center gap-x-2"><div class="w-2.5 h-2.5 bg-emerald-500 rounded-full"></div><span>Holiday</span></div>
+                <div class="flex items-center gap-x-2"><div class="w-2.5 h-2.5 bg-amber-500 rounded-full"></div><span>Unpaid Leave</span></div>
                 <div class="text-slate-400">• Tap any day for details</div>
             </div>
         </div>
@@ -146,73 +140,73 @@
     </div>
 
     <script>
-        // ========== YOUR DATA + NEW HOLIDAYS ==========
+        // ========== DATA (Surnames reduced for privacy) ==========
         let leaves = [
-            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"28/08/2026","end":"31/08/2026","status":"Denied"},
-            {"created":"17/04/2026","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"15/08/2026","end":"16/08/2026","status":"Requested"},
-            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"10/08/2026","end":"11/08/2026","status":"Approved"},
-            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"17/07/2026","end":"19/07/2026","status":"Approved"},
-            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"13/07/2026","end":"15/07/2026","status":"Approved"},
-            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"10/07/2026","end":"12/07/2026","status":"Approved"},
-            {"created":"17/04/2026","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"22/06/2026","end":"22/06/2026","status":"Requested"},
-            {"created":"22/04/2026","type":"Unpaid Leave","store":"Winchester","employee":"Harry Hancock","start":"16/06/2026","end":"16/06/2026","status":"Requested"},
-            {"created":"17/04/2026","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"15/06/2026","end":"15/06/2026","status":"Requested"},
-            {"created":"22/04/2026","type":"Holiday","store":"Winchester","employee":"Harry Hancock","start":"29/05/2026","end":"05/06/2026","status":"Requested"},
-            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"28/05/2026","end":"31/05/2026","status":"Denied"},
-            {"created":"23/04/2026","type":"Holiday","store":"Winchester","employee":"Oliver Smith","start":"24/05/2026","end":"25/05/2026","status":"Requested"},
-            {"created":"06/03/2026","type":"Holiday","store":"Winchester","employee":"Jacek Kij","start":"22/05/2026","end":"30/05/2026","status":"Approved"},
-            {"created":"06/04/2026","type":"Holiday","store":"Winchester","employee":"Mark Butcher","start":"15/05/2026","end":"15/05/2026","status":"Approved"},
-            {"created":"24/04/2026","type":"Holiday","store":"Winchester","employee":"Misbah Riaz","start":"11/05/2026","end":"16/05/2026","status":"Requested"},
-            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"30/04/2026","end":"04/05/2026","status":"Approved"},
-            {"created":"26/03/2026","type":"Unpaid Leave","store":"Winchester","employee":"James Jones","start":"24/04/2026","end":"25/04/2026","status":"Approved"},
-            {"created":"07/05/2025","type":"Holiday","store":"Winchester","employee":"Matthew Critchley","start":"17/04/2026","end":"19/04/2026","status":"Approved"},
-            {"created":"05/02/2026","type":"Holiday","store":"Winchester","employee":"Jan Maudsley","start":"04/04/2026","end":"08/04/2026","status":"Approved"},
-            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"02/04/2026","end":"05/04/2026","status":"Denied"},
-            {"created":"21/02/2026","type":"Holiday","store":"Winchester","employee":"James Walkinshaw","start":"20/03/2026","end":"23/03/2026","status":"Approved"},
-            {"created":"26/02/2026","type":"Holiday","store":"Winchester","employee":"Mark Butcher","start":"17/03/2026","end":"17/03/2026","status":"Approved"},
-            {"created":"07/12/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"16/03/2026","end":"18/03/2026","status":"Approved"},
-            {"created":"07/02/2026","type":"Holiday","store":"Winchester","employee":"Florin Paun","start":"03/03/2026","end":"10/03/2026","status":"Approved"},
-            {"created":"21/02/2026","type":"Holiday","store":"Winchester","employee":"Zeshan Rasool","start":"02/03/2026","end":"02/03/2026","status":"Approved"},
-            {"created":"07/12/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"06/02/2026","end":"08/02/2026","status":"Approved"},
-            {"created":"12/10/2025","type":"Holiday","store":"Winchester","employee":"James Jones","start":"02/02/2026","end":"08/02/2026","status":"Approved"},
-            {"created":"07/12/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"22/01/2026","end":"23/01/2026","status":"Denied"},
-            {"created":"24/09/2025","type":"Unpaid Leave","store":"Winchester","employee":"Matthew Critchley","start":"08/01/2026","end":"08/01/2026","status":"Approved"},
-            {"created":"23/10/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"05/01/2026","end":"18/01/2026","status":"Denied"},
-            {"created":"07/12/2025","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"05/01/2026","end":"11/01/2026","status":"Approved"},
-            {"created":"23/09/2025","type":"Holiday","store":"Winchester","employee":"Misbah Riaz","start":"04/01/2026","end":"19/01/2026","status":"Approved"},
-            {"created":"09/12/2025","type":"Holiday","store":"Winchester","employee":"Jan Maudsley","start":"03/01/2026","end":"07/01/2026","status":"Approved"},
-            {"created":"18/11/2025","type":"Unpaid Leave","store":"Winchester","employee":"Alex Billimore","start":"01/01/2026","end":"01/01/2026","status":"Approved"},
-            {"created":"03/12/2025","type":"Holiday","store":"Winchester","employee":"Jan Maudsley","start":"25/12/2025","end":"25/12/2025","status":"Denied"},
-            {"created":"03/12/2025","type":"Holiday","store":"Winchester","employee":"James Walkinshaw","start":"25/12/2025","end":"25/12/2025","status":"Approved"},
-            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Mark Butcher","start":"20/12/2025","end":"03/01/2026","status":"Approved"},
-            {"created":"12/10/2025","type":"Unpaid Leave","store":"Winchester","employee":"James Jones","start":"08/12/2025","end":"11/12/2025","status":"Approved"},
-            {"created":"18/08/2025","type":"Holiday","store":"Winchester","employee":"James Jones","start":"17/11/2025","end":"25/11/2025","status":"Denied"},
-            {"created":"14/10/2025","type":"Unpaid Leave","store":"Winchester","employee":"Matthew Critchley","start":"09/11/2025","end":"09/11/2025","status":"Approved"},
-            {"created":"12/10/2025","type":"Unpaid Leave","store":"Winchester","employee":"James Jones","start":"09/11/2025","end":"12/11/2025","status":"Denied"},
-            {"created":"13/09/2025","type":"Unpaid Leave","store":"Winchester","employee":"Matthew Critchley","start":"13/10/2025","end":"14/10/2025","status":"Denied"},
-            {"created":"28/07/2025","type":"Holiday","store":"Winchester","employee":"Mark Butcher","start":"26/09/2025","end":"26/09/2025","status":"Denied"},
-            {"created":"07/08/2025","type":"Unpaid Leave","store":"Winchester","employee":"Alex Billimore","start":"10/09/2025","end":"10/09/2025","status":"Denied"},
-            {"created":"14/08/2025","type":"Holiday","store":"Winchester","employee":"Clay Dudley","start":"08/09/2025","end":"14/09/2025","status":"Approved"},
-            {"created":"14/07/2025","type":"Unpaid Leave","store":"Winchester","employee":"Florin Paun","start":"17/08/2025","end":"30/08/2025","status":"Approved"},
-            {"created":"17/08/2024","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"11/08/2025","end":"17/08/2025","status":"Approved"},
-            {"created":"10/04/2025","type":"Holiday","store":"Winchester","employee":"Matthew Critchley","start":"04/08/2025","end":"17/08/2025","status":"Approved"},
-            {"created":"21/05/2025","type":"Holiday","store":"Winchester","employee":"Jan Maudsley","start":"01/08/2025","end":"01/08/2025","status":"Approved"},
-            {"created":"17/08/2024","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"28/07/2025","end":"03/08/2025","status":"Approved"},
-            {"created":"17/08/2024","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"17/07/2025","end":"19/07/2025","status":"Approved"},
-            {"created":"10/04/2025","type":"Holiday","store":"Winchester","employee":"Matthew Critchley","start":"14/07/2025","end":"20/07/2025","status":"Approved"},
-            {"created":"21/05/2025","type":"Holiday","store":"Winchester","employee":"Jan Maudsley","start":"05/07/2025","end":"16/07/2025","status":"Approved"},
-            {"created":"11/04/2025","type":"Holiday","store":"Winchester","employee":"Matthew Critchley","start":"28/06/2025","end":"28/06/2025","status":"Approved"},
-            {"created":"06/05/2025","type":"Holiday","store":"Winchester","employee":"Mark Butcher","start":"25/06/2025","end":"06/07/2025","status":"Approved"},
-            {"created":"17/08/2024","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"23/06/2025","end":"29/06/2025","status":"Approved"},
-            {"created":"02/04/2025","type":"Holiday","store":"Winchester","employee":"James Jones","start":"17/06/2025","end":"25/06/2025","status":"Approved"},
-            {"created":"17/08/2024","type":"Holiday","store":"Winchester","employee":"Alex Billimore","start":"16/06/2025","end":"22/06/2025","status":"Approved"},
-            {"created":"18/05/2025","type":"Holiday","store":"Winchester","employee":"Jan Maudsley","start":"11/06/2025","end":"12/06/2025","status":"Approved"},
-            {"created":"10/04/2025","type":"Holiday","store":"Winchester","employee":"Matthew Critchley","start":"09/06/2025","end":"15/06/2025","status":"Approved"},
+            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex B","start":"28/08/2026","end":"31/08/2026","status":"Denied"},
+            {"created":"17/04/2026","type":"Holiday","store":"Winchester","employee":"Alex B","start":"15/08/2026","end":"16/08/2026","status":"Requested"},
+            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex B","start":"10/08/2026","end":"11/08/2026","status":"Approved"},
+            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex B","start":"17/07/2026","end":"19/07/2026","status":"Approved"},
+            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex B","start":"13/07/2026","end":"15/07/2026","status":"Approved"},
+            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex B","start":"10/07/2026","end":"12/07/2026","status":"Approved"},
+            {"created":"17/04/2026","type":"Holiday","store":"Winchester","employee":"Alex B","start":"22/06/2026","end":"22/06/2026","status":"Requested"},
+            {"created":"22/04/2026","type":"Unpaid Leave","store":"Winchester","employee":"Harry H","start":"16/06/2026","end":"16/06/2026","status":"Requested"},
+            {"created":"17/04/2026","type":"Holiday","store":"Winchester","employee":"Alex B","start":"15/06/2026","end":"15/06/2026","status":"Requested"},
+            {"created":"22/04/2026","type":"Holiday","store":"Winchester","employee":"Harry H","start":"29/05/2026","end":"05/06/2026","status":"Requested"},
+            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex B","start":"28/05/2026","end":"31/05/2026","status":"Denied"},
+            {"created":"23/04/2026","type":"Holiday","store":"Winchester","employee":"Oliver S","start":"24/05/2026","end":"25/05/2026","status":"Requested"},
+            {"created":"06/03/2026","type":"Holiday","store":"Winchester","employee":"Jacek K","start":"22/05/2026","end":"30/05/2026","status":"Approved"},
+            {"created":"06/04/2026","type":"Holiday","store":"Winchester","employee":"Mark B","start":"15/05/2026","end":"15/05/2026","status":"Approved"},
+            {"created":"24/04/2026","type":"Holiday","store":"Winchester","employee":"Misbah R","start":"11/05/2026","end":"16/05/2026","status":"Requested"},
+            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex B","start":"30/04/2026","end":"04/05/2026","status":"Approved"},
+            {"created":"26/03/2026","type":"Unpaid Leave","store":"Winchester","employee":"James J","start":"24/04/2026","end":"25/04/2026","status":"Approved"},
+            {"created":"07/05/2025","type":"Holiday","store":"Winchester","employee":"Matthew C","start":"17/04/2026","end":"19/04/2026","status":"Approved"},
+            {"created":"05/02/2026","type":"Holiday","store":"Winchester","employee":"Jan M","start":"04/04/2026","end":"08/04/2026","status":"Approved"},
+            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex B","start":"02/04/2026","end":"05/04/2026","status":"Denied"},
+            {"created":"21/02/2026","type":"Holiday","store":"Winchester","employee":"James W","start":"20/03/2026","end":"23/03/2026","status":"Approved"},
+            {"created":"26/02/2026","type":"Holiday","store":"Winchester","employee":"Mark B","start":"17/03/2026","end":"17/03/2026","status":"Approved"},
+            {"created":"07/12/2025","type":"Holiday","store":"Winchester","employee":"Alex B","start":"16/03/2026","end":"18/03/2026","status":"Approved"},
+            {"created":"07/02/2026","type":"Holiday","store":"Winchester","employee":"Florin P","start":"03/03/2026","end":"10/03/2026","status":"Approved"},
+            {"created":"21/02/2026","type":"Holiday","store":"Winchester","employee":"Zeshan R","start":"02/03/2026","end":"02/03/2026","status":"Approved"},
+            {"created":"07/12/2025","type":"Holiday","store":"Winchester","employee":"Alex B","start":"06/02/2026","end":"08/02/2026","status":"Approved"},
+            {"created":"12/10/2025","type":"Holiday","store":"Winchester","employee":"James J","start":"02/02/2026","end":"08/02/2026","status":"Approved"},
+            {"created":"07/12/2025","type":"Holiday","store":"Winchester","employee":"Alex B","start":"22/01/2026","end":"23/01/2026","status":"Denied"},
+            {"created":"24/09/2025","type":"Unpaid Leave","store":"Winchester","employee":"Matthew C","start":"08/01/2026","end":"08/01/2026","status":"Approved"},
+            {"created":"23/10/2025","type":"Holiday","store":"Winchester","employee":"Alex B","start":"05/01/2026","end":"18/01/2026","status":"Denied"},
+            {"created":"07/12/2025","type":"Holiday","store":"Winchester","employee":"Alex B","start":"05/01/2026","end":"11/01/2026","status":"Approved"},
+            {"created":"23/09/2025","type":"Holiday","store":"Winchester","employee":"Misbah R","start":"04/01/2026","end":"19/01/2026","status":"Approved"},
+            {"created":"09/12/2025","type":"Holiday","store":"Winchester","employee":"Jan M","start":"03/01/2026","end":"07/01/2026","status":"Approved"},
+            {"created":"18/11/2025","type":"Unpaid Leave","store":"Winchester","employee":"Alex B","start":"01/01/2026","end":"01/01/2026","status":"Approved"},
+            {"created":"03/12/2025","type":"Holiday","store":"Winchester","employee":"Jan M","start":"25/12/2025","end":"25/12/2025","status":"Denied"},
+            {"created":"03/12/2025","type":"Holiday","store":"Winchester","employee":"James W","start":"25/12/2025","end":"25/12/2025","status":"Approved"},
+            {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Mark B","start":"20/12/2025","end":"03/01/2026","status":"Approved"},
+            {"created":"12/10/2025","type":"Unpaid Leave","store":"Winchester","employee":"James J","start":"08/12/2025","end":"11/12/2025","status":"Approved"},
+            {"created":"18/08/2025","type":"Holiday","store":"Winchester","employee":"James J","start":"17/11/2025","end":"25/11/2025","status":"Denied"},
+            {"created":"14/10/2025","type":"Unpaid Leave","store":"Winchester","employee":"Matthew C","start":"09/11/2025","end":"09/11/2025","status":"Approved"},
+            {"created":"12/10/2025","type":"Unpaid Leave","store":"Winchester","employee":"James J","start":"09/11/2025","end":"12/11/2025","status":"Denied"},
+            {"created":"13/09/2025","type":"Unpaid Leave","store":"Winchester","employee":"Matthew C","start":"13/10/2025","end":"14/10/2025","status":"Denied"},
+            {"created":"28/07/2025","type":"Holiday","store":"Winchester","employee":"Mark B","start":"26/09/2025","end":"26/09/2025","status":"Denied"},
+            {"created":"07/08/2025","type":"Unpaid Leave","store":"Winchester","employee":"Alex B","start":"10/09/2025","end":"10/09/2025","status":"Denied"},
+            {"created":"14/08/2025","type":"Holiday","store":"Winchester","employee":"Clay D","start":"08/09/2025","end":"14/09/2025","status":"Approved"},
+            {"created":"14/07/2025","type":"Unpaid Leave","store":"Winchester","employee":"Florin P","start":"17/08/2025","end":"30/08/2025","status":"Approved"},
+            {"created":"17/08/2024","type":"Holiday","store":"Winchester","employee":"Alex B","start":"11/08/2025","end":"17/08/2025","status":"Approved"},
+            {"created":"10/04/2025","type":"Holiday","store":"Winchester","employee":"Matthew C","start":"04/08/2025","end":"17/08/2025","status":"Approved"},
+            {"created":"21/05/2025","type":"Holiday","store":"Winchester","employee":"Jan M","start":"01/08/2025","end":"01/08/2025","status":"Approved"},
+            {"created":"17/08/2024","type":"Holiday","store":"Winchester","employee":"Alex B","start":"28/07/2025","end":"03/08/2025","status":"Approved"},
+            {"created":"17/08/2024","type":"Holiday","store":"Winchester","employee":"Alex B","start":"17/07/2025","end":"19/07/2025","status":"Approved"},
+            {"created":"10/04/2025","type":"Holiday","store":"Winchester","employee":"Matthew C","start":"14/07/2025","end":"20/07/2025","status":"Approved"},
+            {"created":"21/05/2025","type":"Holiday","store":"Winchester","employee":"Jan M","start":"05/07/2025","end":"16/07/2025","status":"Approved"},
+            {"created":"11/04/2025","type":"Holiday","store":"Winchester","employee":"Matthew C","start":"28/06/2025","end":"28/06/2025","status":"Approved"},
+            {"created":"06/05/2025","type":"Holiday","store":"Winchester","employee":"Mark B","start":"25/06/2025","end":"06/07/2025","status":"Approved"},
+            {"created":"17/08/2024","type":"Holiday","store":"Winchester","employee":"Alex B","start":"23/06/2025","end":"29/06/2025","status":"Approved"},
+            {"created":"02/04/2025","type":"Holiday","store":"Winchester","employee":"James J","start":"17/06/2025","end":"25/06/2025","status":"Approved"},
+            {"created":"17/08/2024","type":"Holiday","store":"Winchester","employee":"Alex B","start":"16/06/2025","end":"22/06/2025","status":"Approved"},
+            {"created":"18/05/2025","type":"Holiday","store":"Winchester","employee":"Jan M","start":"11/06/2025","end":"12/06/2025","status":"Approved"},
+            {"created":"10/04/2025","type":"Holiday","store":"Winchester","employee":"Matthew C","start":"09/06/2025","end":"15/06/2025","status":"Approved"},
             
-            // === NEW HOLIDAYS FOR MATTHEW CRITCHLEY ===
-            {"created":"24/04/2026","type":"Holiday","store":"Winchester","employee":"Matthew Critchley","start":"10/08/2026","end":"16/08/2026","status":"Approved"},
-            {"created":"24/04/2026","type":"Holiday","store":"Winchester","employee":"Matthew Critchley","start":"03/07/2026","end":"05/07/2026","status":"Approved"},
-            {"created":"24/04/2026","type":"Holiday","store":"Winchester","employee":"Matthew Critchley","start":"05/05/2026","end":"11/05/2026","status":"Approved"}
+            // NEW HOLIDAYS
+            {"created":"24/04/2026","type":"Holiday","store":"Winchester","employee":"Matthew C","start":"10/08/2026","end":"16/08/2026","status":"Approved"},
+            {"created":"24/04/2026","type":"Holiday","store":"Winchester","employee":"Matthew C","start":"03/07/2026","end":"05/07/2026","status":"Approved"},
+            {"created":"24/04/2026","type":"Holiday","store":"Winchester","employee":"Matthew C","start":"05/05/2026","end":"11/05/2026","status":"Approved"}
         ];
 
         let currentMonth = new Date().getMonth();
@@ -255,9 +249,7 @@
 
         function updateStats() {
             const visible = getVisibleLeaves();
-            const uniqueEmployees = new Set(visible.map(l => l.employee)).size;
-            
-            document.getElementById('total-employees').textContent = uniqueEmployees;
+            document.getElementById('total-employees').textContent = new Set(visible.map(l => l.employee)).size;
             document.getElementById('total-leaves').textContent = visible.length;
             
             const today = new Date(); today.setHours(0,0,0,0);
@@ -346,7 +338,10 @@
                     if (dayLeaves.length <= 2) {
                         const names = document.createElement('div');
                         names.className = 'text-[8px] leading-none text-slate-500 font-medium mt-0.5 w-full truncate';
-                        names.textContent = dayLeaves.map(l => l.employee.split(' ').map(p => p[0]).join('')).join(', ');
+                        names.textContent = dayLeaves.map(l => {
+                            const parts = l.employee.split(' ');
+                            return parts.map(p => p[0]).join(' ');
+                        }).join(', ');
                         container.appendChild(names);
                     } else {
                         const more = document.createElement('div');
@@ -429,8 +424,6 @@
         function init() {
             updateStats();
             renderCalendar(currentMonth, currentYear);
-            
-            console.log('%c[Winchester Holiday Calendar] Clean version - no buttons, no today!', 'color:#64748b');
         }
 
         window.onload = init;
