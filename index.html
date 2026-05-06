@@ -28,6 +28,8 @@
             align-items: center;
             gap: 8px;
         }
+        
+        .manager-day { background-color: #fee2e2 !important; }
     </style>
 </head>
 <body class="bg-slate-50">
@@ -120,6 +122,7 @@
             <div class="flex justify-center gap-x-5 mt-4 text-xs text-slate-500">
                 <div class="flex items-center gap-x-2"><div class="w-2.5 h-2.5 bg-emerald-500 rounded-full"></div><span>Holiday</span></div>
                 <div class="flex items-center gap-x-2"><div class="w-2.5 h-2.5 bg-amber-500 rounded-full"></div><span>Unpaid Leave</span></div>
+                <div class="flex items-center gap-x-2"><div class="w-2.5 h-2.5 bg-red-500 rounded-full"></div><span>Manager</span></div>
             </div>
         </div>
 
@@ -160,27 +163,24 @@
     </div>
 
     <script>
+        const managers = ["Alex B", "Clay D", "Matthew C", "Misbah R"];
+
         let leaves = [
-            // Clay D 18-24 May 2026 → Now APPROVED
             {"created":"06/05/2026","type":"Holiday","store":"Winchester","employee":"Clay D","start":"18/05/2026","end":"24/05/2026","status":"Approved"},
-            
-            // Alex B 17-18 Aug 2026 (Requested)
             {"created":"05/05/2026","type":"Holiday","store":"Winchester","employee":"Alex B","start":"17/08/2026","end":"18/08/2026","status":"Requested"},
-            
             {"created":"04/05/2026","type":"Holiday","store":"Winchester","employee":"Misbah R","start":"01/06/2026","end":"08/06/2026","status":"Requested"},
             {"created":"03/05/2026","type":"Holiday","store":"Winchester","employee":"Jan M","start":"30/05/2026","end":"30/05/2026","status":"Approved"},
             {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex B","start":"28/08/2026","end":"31/08/2026","status":"Denied"},
-            {"created":"17/04/2026","type":"Holiday","store":"Winchester","employee":"Alex B","start":"15/08/2026","end":"16/08/2026","status":"Requested"},
             {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex B","start":"10/08/2026","end":"11/08/2026","status":"Approved"},
             {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex B","start":"17/07/2026","end":"19/07/2026","status":"Approved"},
             {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex B","start":"13/07/2026","end":"15/07/2026","status":"Approved"},
             {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex B","start":"10/07/2026","end":"12/07/2026","status":"Approved"},
             {"created":"17/04/2026","type":"Holiday","store":"Winchester","employee":"Alex B","start":"22/06/2026","end":"22/06/2026","status":"Requested"},
-            {"created":"22/04/2026","type":"Unpaid Leave","store":"Winchester","employee":"Harry H","start":"16/06/2026","end":"16/06/2026","status":"Requested"},
+            {"created":"22/04/2026","type":"Unpaid Leave","store":"Winchester","employee":"Harry H","start":"16/06/2026","end":"16/06/2026","status":"Approved"},
             {"created":"17/04/2026","type":"Holiday","store":"Winchester","employee":"Alex B","start":"15/06/2026","end":"15/06/2026","status":"Requested"},
-            {"created":"22/04/2026","type":"Holiday","store":"Winchester","employee":"Harry H","start":"29/05/2026","end":"05/06/2026","status":"Requested"},
+            {"created":"22/04/2026","type":"Holiday","store":"Winchester","employee":"Harry H","start":"29/05/2026","end":"05/06/2026","status":"Approved"},
             {"created":"18/11/2025","type":"Holiday","store":"Winchester","employee":"Alex B","start":"28/05/2026","end":"31/05/2026","status":"Denied"},
-            {"created":"23/04/2026","type":"Holiday","store":"Winchester","employee":"Oliver S","start":"24/05/2026","end":"25/05/2026","status":"Requested"},
+            {"created":"23/04/2026","type":"Holiday","store":"Winchester","employee":"Oliver S","start":"24/05/2026","end":"25/05/2026","status":"Approved"},
             {"created":"06/03/2026","type":"Holiday","store":"Winchester","employee":"Jacek K","start":"22/05/2026","end":"30/05/2026","status":"Approved"},
             {"created":"06/04/2026","type":"Holiday","store":"Winchester","employee":"Mark B","start":"15/05/2026","end":"15/05/2026","status":"Approved"},
             {"created":"24/04/2026","type":"Holiday","store":"Winchester","employee":"Misbah R","start":"11/05/2026","end":"16/05/2026","status":"Requested"},
@@ -236,6 +236,10 @@
 
         let currentMonth = new Date().getMonth();
         let currentYear = new Date().getFullYear();
+
+        function isManager(employee) {
+            return managers.includes(employee);
+        }
 
         function parseDate(dateStr) {
             if (!dateStr) return null;
@@ -358,12 +362,20 @@
                 cellDate.setHours(0,0,0,0);
                 const dayLeaves = getLeavesForDate(cellDate);
                 
+                const managerCount = dayLeaves.filter(l => isManager(l.employee)).length;
+                
                 const cell = document.createElement('div');
-                cell.className = `calendar-day bg-white border border-slate-200 rounded-2xl p-1.5 sm:p-2 flex flex-col cursor-pointer relative overflow-hidden active:bg-slate-100`;
+                let cellClasses = `calendar-day bg-white border border-slate-200 rounded-2xl p-1.5 sm:p-2 flex flex-col cursor-pointer relative overflow-hidden active:bg-slate-100`;
+                
+                if (managerCount >= 2) {
+                    cellClasses += ` manager-day`;
+                }
                 
                 if (cellDate.getTime() === today.getTime()) {
-                    cell.classList.add('today', 'ring-2', 'ring-offset-1', 'ring-yellow-300');
+                    cellClasses += ` today ring-2 ring-offset-1 ring-yellow-300`;
                 }
+                
+                cell.className = cellClasses;
                 
                 const dateNum = document.createElement('div');
                 dateNum.className = `text-xs sm:text-sm font-semibold ${cellDate.getTime() === today.getTime() ? 'text-yellow-600' : 'text-slate-700'}`;
@@ -374,31 +386,14 @@
                     const container = document.createElement('div');
                     container.className = 'mt-1 flex flex-wrap gap-1 items-center';
                     
-                    const holidayCount = dayLeaves.filter(l => l.type === 'Holiday').length;
-                    const unpaidCount = dayLeaves.filter(l => l.type === 'Unpaid Leave').length;
-                    
-                    if (holidayCount > 0) {
+                    dayLeaves.forEach(leave => {
+                        const isMgr = isManager(leave.employee);
+                        const colorClass = isMgr ? 'bg-red-500' : (leave.type === 'Holiday' ? 'bg-emerald-500' : 'bg-amber-500');
+                        
                         const dot = document.createElement('div');
-                        dot.className = `leave-dot bg-emerald-500`;
+                        dot.className = `leave-dot ${colorClass}`;
                         container.appendChild(dot);
-                        if (holidayCount > 1) {
-                            const c = document.createElement('span');
-                            c.className = 'text-[9px] font-bold text-emerald-600 -ml-0.5';
-                            c.textContent = holidayCount;
-                            container.appendChild(c);
-                        }
-                    }
-                    if (unpaidCount > 0) {
-                        const dot = document.createElement('div');
-                        dot.className = `leave-dot bg-amber-500 ml-0.5`;
-                        container.appendChild(dot);
-                        if (unpaidCount > 1) {
-                            const c = document.createElement('span');
-                            c.className = 'text-[9px] font-bold text-amber-600 -ml-0.5';
-                            c.textContent = unpaidCount;
-                            container.appendChild(c);
-                        }
-                    }
+                    });
                     
                     if (dayLeaves.length <= 2) {
                         const names = document.createElement('div');
@@ -443,25 +438,15 @@
             const diff = touchEndX - touchStartX;
             
             if (Math.abs(diff) > swipeThreshold) {
-                if (diff > 0) {
-                    prevMonth();
-                } else {
-                    nextMonth();
-                }
+                if (diff > 0) prevMonth();
+                else nextMonth();
             }
         }
 
         function initSwipe() {
             const calendarContainer = document.getElementById('calendar-container');
-            
-            calendarContainer.addEventListener('touchstart', (e) => {
-                touchStartX = e.changedTouches[0].screenX;
-            }, { passive: true });
-            
-            calendarContainer.addEventListener('touchend', (e) => {
-                touchEndX = e.changedTouches[0].screenX;
-                handleSwipe();
-            }, { passive: true });
+            calendarContainer.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+            calendarContainer.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; handleSwipe(); }, { passive: true });
         }
 
         function showDayModal(date, dayLeaves) {
@@ -476,13 +461,20 @@
                 content.innerHTML = '<div class="text-center py-8"><i class="fa-solid fa-calendar text-5xl text-slate-300 mb-4"></i><p class="text-slate-500">No one is on leave this day.</p></div>';
             } else {
                 let html = '<div class="space-y-3">';
+                
                 for (let i = 0; i < dayLeaves.length; i++) {
                     const leave = dayLeaves[i];
                     const dur = getDaysBetween(leave.start, leave.end);
-                    let statusClass = (leave.status === 'Approved') ? 'status-approved' : (leave.status === 'Requested') ? 'status-requested' : 'status-denied';
-                    let typeClass = (leave.type === 'Holiday') ? 'type-holiday' : 'type-unpaid';
-                    let icon = (leave.type === 'Holiday') ? 'fa-umbrella-beach' : 'fa-hand-holding-usd';
-                    let color = (leave.type === 'Holiday') ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600';
+                    const isMgr = isManager(leave.employee);
+                    
+                    let statusClass = leave.status === 'Approved' ? 'status-approved' : 
+                                     leave.status === 'Requested' ? 'status-requested' : 'status-denied';
+                    let typeClass = leave.type === 'Holiday' ? 'type-holiday' : 'type-unpaid';
+                    let icon = leave.type === 'Holiday' ? 'fa-umbrella-beach' : 'fa-hand-holding-usd';
+                    let color = isMgr ? 'bg-red-100 text-red-600' : 
+                               (leave.type === 'Holiday' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600');
+                    
+                    const dayText = dur + ' day' + (dur > 1 ? 's' : '');
                     
                     html += '<div class="border border-slate-200 rounded-2xl p-4 flex gap-4 bg-white">' +
                         '<div class="w-9 h-9 rounded-2xl flex-shrink-0 flex items-center justify-center text-lg ' + color + '">' +
@@ -490,7 +482,7 @@
                         '</div>' +
                         '<div class="flex-1 min-w-0">' +
                             '<div class="flex justify-between items-start">' +
-                                '<div class="font-semibold">' + leave.employee + '</div>' +
+                                '<div class="font-semibold ' + (isMgr ? 'text-red-600' : '') + '">' + leave.employee + '</div>' +
                                 '<div class="px-2.5 py-px text-xs font-bold rounded-full ' + statusClass + '">' + leave.status + '</div>' +
                             '</div>' +
                             '<div class="flex items-center gap-x-2 mt-1">' +
@@ -498,11 +490,12 @@
                                 '<span class="text-xs text-slate-500">' + formatDate(leave.start) + ' — ' + formatDate(leave.end) + '</span>' +
                             '</div>' +
                             '<div class="mt-1.5 text-xs text-slate-500">' +
-                                '<span class="font-mono bg-slate-100 px-1.5 py-px rounded">' + dur + ' day' + (dur > 1 ? 's' : '') + '</span>' +
+                                '<span class="font-mono bg-slate-100 px-1.5 py-px rounded">' + dayText + '</span>' +
                             '</div>' +
                         '</div>' +
                     '</div>';
                 }
+                
                 html += '</div>';
                 content.innerHTML = html;
             }
