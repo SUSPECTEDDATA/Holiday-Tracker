@@ -151,11 +151,6 @@
                 </div>
                 <div id="calendar-grid" class="grid grid-cols-7 gap-px bg-slate-200 p-1"></div>
             </div>
-            
-            <div class="flex justify-center gap-x-5 mt-4 text-xs text-slate-500">
-                <div class="flex items-center gap-x-2"><div class="w-2.5 h-2.5 bg-emerald-500 rounded-full"></div><span>Holiday</span></div>
-                <div class="flex items-center gap-x-2"><div class="w-2.5 h-2.5 bg-red-500 rounded-full"></div><span>Manager</span></div>
-            </div>
         </div>
 
         <!-- REQUESTED HOLIDAYS PANEL (BOTTOM) -->
@@ -476,7 +471,6 @@
                     
                     dayLeaves.forEach(leave => {
                         const isMgr = isManager(leave.employee);
-                        // Red dot for managers, green for everyone else
                         const colorClass = isMgr ? 'bg-red-500' : 'bg-emerald-500';
                         
                         const dot = document.createElement('div');
