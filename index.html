@@ -30,6 +30,12 @@
         }
         
         .manager-day { background-color: #fee2e2 !important; }
+        .highlight-day {
+            background-color: #fef08c !important;
+            border: 2px solid #ca8a04 !important;
+            box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.3);
+            z-index: 10;
+        }
     </style>
 </head>
 <body class="bg-slate-50">
@@ -164,6 +170,7 @@
 
     <script>
         const managers = ["Alex B", "Clay D", "Matthew C", "Misbah R"];
+        let selectedLeave = null;
 
         let leaves = [
             {"created":"06/05/2026","type":"Holiday","store":"Winchester","employee":"Clay D","start":"18/05/2026","end":"24/05/2026","status":"Approved"},
@@ -286,12 +293,12 @@
             }
             
             let html = '';
-            requested.forEach(leave => {
+            requested.forEach((leave, index) => {
                 const dur = getDaysBetween(leave.start, leave.end);
                 const dayText = dur + ' day' + (dur > 1 ? 's' : '');
                 
                 html += `
-                    <div class="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-2xl px-4 py-2.5">
+                    <div onclick='goToLeave(${JSON.stringify(leave)})' class="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-2xl px-4 py-2.5 cursor-pointer hover:bg-amber-100 active:bg-amber-200 transition-colors">
                         <div class="flex items-center gap-x-3">
                             <div class="w-8 h-8 bg-amber-100 rounded-xl flex items-center justify-center flex-shrink-0">
                                 <i class="fa-solid fa-user text-amber-600 text-sm"></i>
@@ -371,6 +378,11 @@
                     cellClasses += ` manager-day`;
                 }
                 
+                // Highlight if this day is in the selected leave range
+                if (selectedLeave && isDateInRange(cellDate, selectedLeave.start, selectedLeave.end)) {
+                    cellClasses += ` highlight-day`;
+                }
+                
                 if (cellDate.getTime() === today.getTime()) {
                     cellClasses += ` today ring-2 ring-offset-1 ring-yellow-300`;
                 }
@@ -427,8 +439,45 @@
             }
         }
 
-        function prevMonth() { currentMonth--; if (currentMonth < 0) { currentMonth = 11; currentYear--; } renderCalendar(currentMonth, currentYear); }
-        function nextMonth() { currentMonth++; if (currentMonth > 11) { currentMonth = 0; currentYear++; } renderCalendar(currentMonth, currentYear); }
+        function prevMonth() { 
+            currentMonth--; 
+            if (currentMonth < 0) { currentMonth = 11; currentYear--; } 
+            selectedLeave = null;
+            renderCalendar(currentMonth, currentYear); 
+        }
+        
+        function nextMonth() { 
+            currentMonth++; 
+            if (currentMonth > 11) { currentMonth = 0; currentYear++; } 
+            selectedLeave = null;
+            renderCalendar(currentMonth, currentYear); 
+        }
+
+        function goToLeave(leave) {
+            selectedLeave = leave;
+            
+            const startDate = parseDate(leave.start);
+            currentMonth = startDate.getMonth();
+            currentYear = startDate.getFullYear();
+            
+            renderCalendar(currentMonth, currentYear);
+            
+            // Scroll to calendar
+            setTimeout(() => {
+                document.getElementById('calendar-container').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'center' 
+                });
+            }, 50);
+            
+            // Clear highlight after 5 seconds
+            setTimeout(() => {
+                if (selectedLeave && selectedLeave.start === leave.start) {
+                    selectedLeave = null;
+                    renderCalendar(currentMonth, currentYear);
+                }
+            }, 5000);
+        }
 
         let touchStartX = 0;
         let touchEndX = 0;
