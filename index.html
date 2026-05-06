@@ -20,7 +20,6 @@
         .status-requested { background-color: #fef9c3; color: #854d0e; }
         .status-denied { background-color: #fee2e2; color: #991b1b; }
         .type-holiday { background-color: #d1fae5; color: #065f46; }
-        .type-unpaid { background-color: #fef3c7; color: #92400e; }
         
         .calendar-header {
             display: grid;
@@ -35,6 +34,15 @@
             border: 2px solid #ca8a04 !important;
             box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.3);
             z-index: 10;
+        }
+        
+        .filter-btn {
+            transition: all 0.2s ease;
+        }
+        .filter-btn.active {
+            background-color: #6366f1;
+            color: white;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
         }
     </style>
 </head>
@@ -96,6 +104,25 @@
             </div>
         </div>
 
+        <!-- Filter Buttons -->
+        <div class="flex justify-center gap-2 mb-4">
+            <button onclick="setFilter('all')" id="filter-all"
+                    class="filter-btn active px-4 py-1.5 text-sm font-medium rounded-2xl bg-indigo-600 text-white flex items-center gap-x-2">
+                <i class="fa-solid fa-users text-xs"></i>
+                <span>All</span>
+            </button>
+            <button onclick="setFilter('managers')" id="filter-managers"
+                    class="filter-btn px-4 py-1.5 text-sm font-medium rounded-2xl bg-white border border-slate-300 text-slate-700 flex items-center gap-x-2 hover:bg-red-50">
+                <i class="fa-solid fa-user-tie text-red-500 text-xs"></i>
+                <span>Managers</span>
+            </button>
+            <button onclick="setFilter('staff')" id="filter-staff"
+                    class="filter-btn px-4 py-1.5 text-sm font-medium rounded-2xl bg-white border border-slate-300 text-slate-700 flex items-center gap-x-2 hover:bg-emerald-50">
+                <i class="fa-solid fa-user text-emerald-600 text-xs"></i>
+                <span>Drivers</span>
+            </button>
+        </div>
+
         <!-- FIXED Calendar Header -->
         <div class="flex justify-center mb-4">
             <div class="calendar-header w-full max-w-[380px]">
@@ -127,7 +154,6 @@
             
             <div class="flex justify-center gap-x-5 mt-4 text-xs text-slate-500">
                 <div class="flex items-center gap-x-2"><div class="w-2.5 h-2.5 bg-emerald-500 rounded-full"></div><span>Holiday</span></div>
-                <div class="flex items-center gap-x-2"><div class="w-2.5 h-2.5 bg-amber-500 rounded-full"></div><span>Unpaid Leave</span></div>
                 <div class="flex items-center gap-x-2"><div class="w-2.5 h-2.5 bg-red-500 rounded-full"></div><span>Manager</span></div>
             </div>
         </div>
@@ -171,6 +197,7 @@
     <script>
         const managers = ["Alex B", "Clay D", "Matthew C", "Misbah R"];
         let selectedLeave = null;
+        let currentFilter = 'all';
 
         let leaves = [
             {"created":"06/05/2026","type":"Holiday","store":"Winchester","employee":"Clay D","start":"18/05/2026","end":"24/05/2026","status":"Approved"},
@@ -275,12 +302,61 @@
             return dayDate >= start && dayDate <= end;
         }
 
+        function getFilteredLeaves() {
+            let filtered = leaves.filter(l => l.status !== 'Denied');
+            
+            if (currentFilter === 'managers') {
+                filtered = filtered.filter(l => isManager(l.employee));
+            } else if (currentFilter === 'staff') {
+                filtered = filtered.filter(l => !isManager(l.employee));
+            }
+            
+            return filtered;
+        }
+
         function getVisibleLeaves() {
-            return leaves.filter(l => l.status !== 'Denied');
+            return getFilteredLeaves();
         }
 
         function getRequestedLeaves() {
-            return leaves.filter(l => l.status === 'Requested');
+            let requested = leaves.filter(l => l.status === 'Requested');
+            
+            if (currentFilter === 'managers') {
+                requested = requested.filter(l => isManager(l.employee));
+            } else if (currentFilter === 'staff') {
+                requested = requested.filter(l => !isManager(l.employee));
+            }
+            
+            return requested;
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            
+            document.getElementById('filter-all').classList.toggle('active', filter === 'all');
+            document.getElementById('filter-all').classList.toggle('bg-indigo-600', filter === 'all');
+            document.getElementById('filter-all').classList.toggle('text-white', filter === 'all');
+            document.getElementById('filter-all').classList.toggle('border-slate-300', filter !== 'all');
+            document.getElementById('filter-all').classList.toggle('bg-white', filter !== 'all');
+            document.getElementById('filter-all').classList.toggle('text-slate-700', filter !== 'all');
+            
+            document.getElementById('filter-managers').classList.toggle('active', filter === 'managers');
+            document.getElementById('filter-managers').classList.toggle('bg-red-500', filter === 'managers');
+            document.getElementById('filter-managers').classList.toggle('text-white', filter === 'managers');
+            document.getElementById('filter-managers').classList.toggle('border-red-500', filter === 'managers');
+            document.getElementById('filter-managers').classList.toggle('bg-white', filter !== 'managers');
+            document.getElementById('filter-managers').classList.toggle('text-slate-700', filter !== 'managers');
+            
+            document.getElementById('filter-staff').classList.toggle('active', filter === 'staff');
+            document.getElementById('filter-staff').classList.toggle('bg-emerald-600', filter === 'staff');
+            document.getElementById('filter-staff').classList.toggle('text-white', filter === 'staff');
+            document.getElementById('filter-staff').classList.toggle('border-emerald-600', filter === 'staff');
+            document.getElementById('filter-staff').classList.toggle('bg-white', filter !== 'staff');
+            document.getElementById('filter-staff').classList.toggle('text-slate-700', filter !== 'staff');
+            
+            renderCalendar(currentMonth, currentYear);
+            renderRequestedList();
+            updateStats();
         }
 
         function renderRequestedList() {
@@ -293,9 +369,10 @@
             }
             
             let html = '';
-            requested.forEach((leave, index) => {
+            requested.forEach((leave) => {
                 const dur = getDaysBetween(leave.start, leave.end);
                 const dayText = dur + ' day' + (dur > 1 ? 's' : '');
+                const displayType = leave.type === 'Unpaid Leave' ? 'Holiday' : leave.type;
                 
                 html += `
                     <div onclick='goToLeave(${JSON.stringify(leave)})' class="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-2xl px-4 py-2.5 cursor-pointer hover:bg-amber-100 active:bg-amber-200 transition-colors">
@@ -309,7 +386,7 @@
                             </div>
                         </div>
                         <div class="text-right">
-                            <div class="text-xs px-2 py-0.5 bg-amber-200 text-amber-700 rounded-full font-medium">${leave.type}</div>
+                            <div class="text-xs px-2 py-0.5 bg-amber-200 text-amber-700 rounded-full font-medium">${displayType}</div>
                             <div class="text-xs text-slate-500 mt-0.5">${dayText}</div>
                         </div>
                     </div>
@@ -378,7 +455,6 @@
                     cellClasses += ` manager-day`;
                 }
                 
-                // Highlight if this day is in the selected leave range
                 if (selectedLeave && isDateInRange(cellDate, selectedLeave.start, selectedLeave.end)) {
                     cellClasses += ` highlight-day`;
                 }
@@ -400,7 +476,8 @@
                     
                     dayLeaves.forEach(leave => {
                         const isMgr = isManager(leave.employee);
-                        const colorClass = isMgr ? 'bg-red-500' : (leave.type === 'Holiday' ? 'bg-emerald-500' : 'bg-amber-500');
+                        // Red dot for managers, green for everyone else
+                        const colorClass = isMgr ? 'bg-red-500' : 'bg-emerald-500';
                         
                         const dot = document.createElement('div');
                         dot.className = `leave-dot ${colorClass}`;
@@ -462,7 +539,6 @@
             
             renderCalendar(currentMonth, currentYear);
             
-            // Scroll to calendar
             setTimeout(() => {
                 document.getElementById('calendar-container').scrollIntoView({ 
                     behavior: 'smooth', 
@@ -470,7 +546,6 @@
                 });
             }, 50);
             
-            // Clear highlight after 5 seconds
             setTimeout(() => {
                 if (selectedLeave && selectedLeave.start === leave.start) {
                     selectedLeave = null;
@@ -515,13 +590,13 @@
                     const leave = dayLeaves[i];
                     const dur = getDaysBetween(leave.start, leave.end);
                     const isMgr = isManager(leave.employee);
+                    const displayType = leave.type === 'Unpaid Leave' ? 'Holiday' : leave.type;
                     
                     let statusClass = leave.status === 'Approved' ? 'status-approved' : 
                                      leave.status === 'Requested' ? 'status-requested' : 'status-denied';
-                    let typeClass = leave.type === 'Holiday' ? 'type-holiday' : 'type-unpaid';
-                    let icon = leave.type === 'Holiday' ? 'fa-umbrella-beach' : 'fa-hand-holding-usd';
-                    let color = isMgr ? 'bg-red-100 text-red-600' : 
-                               (leave.type === 'Holiday' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600');
+                    let typeClass = 'type-holiday';
+                    let icon = 'fa-umbrella-beach';
+                    let color = isMgr ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-600';
                     
                     const dayText = dur + ' day' + (dur > 1 ? 's' : '');
                     
@@ -535,7 +610,7 @@
                                 '<div class="px-2.5 py-px text-xs font-bold rounded-full ' + statusClass + '">' + leave.status + '</div>' +
                             '</div>' +
                             '<div class="flex items-center gap-x-2 mt-1">' +
-                                '<span class="px-2 py-px text-xs font-medium rounded ' + typeClass + '">' + leave.type + '</span>' +
+                                '<span class="px-2 py-px text-xs font-medium rounded ' + typeClass + '">' + displayType + '</span>' +
                                 '<span class="text-xs text-slate-500">' + formatDate(leave.start) + ' — ' + formatDate(leave.end) + '</span>' +
                             '</div>' +
                             '<div class="mt-1.5 text-xs text-slate-500">' +
@@ -560,6 +635,9 @@
             renderCalendar(currentMonth, currentYear);
             renderRequestedList();
             initSwipe();
+            
+            document.getElementById('filter-all').classList.add('active', 'bg-indigo-600', 'text-white');
+            document.getElementById('filter-all').classList.remove('border-slate-300', 'bg-white', 'text-slate-700');
         }
 
         window.onload = init;
